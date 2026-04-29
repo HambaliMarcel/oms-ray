@@ -45,13 +45,13 @@ import {
 } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
 import {
-  workloadActivities,
-  workloadByDepartment,
-  workloadByRole,
-  departments,
-  employeesAll,
-  WORKLOAD_CONSTANTS,
-} from "@/lib/oms-data";
+  unifiedWorkloadActivities as workloadActivities,
+  unifiedWorkloadByDepartment as workloadByDepartment,
+  unifiedWorkloadByRole as workloadByRole,
+  unifiedDepartments as departments,
+  unifiedEmployeesAll as employeesAll,
+  unifiedWORKLOAD_CONSTANTS as WORKLOAD_CONSTANTS,
+} from "@/lib/om-metrics";
 
 // ---- helpers ----
 function utilColor(u: number) {

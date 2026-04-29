@@ -15,6 +15,7 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from "@/components/ui/dialog";
+import { formatRupiah } from "@/lib/currency";
 
 const JOB_LEVELS = ["Junior", "Mid-Level", "Senior", "Lead", "Manager", "Director", "VP", "C-Level"];
 const GRADES = ["G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9"];
@@ -151,15 +152,15 @@ export default function CreatePositionPage() {
 
           {/* Salary Range */}
           <div>
-            <p className="text-sm font-semibold mb-4 pb-2 border-b" style={{ color: "var(--foreground)", borderColor: "var(--border)" }}>Salary Range (USD/year)</p>
+            <p className="text-sm font-semibold mb-4 pb-2 border-b" style={{ color: "var(--foreground)", borderColor: "var(--border)" }}>Salary Range (Rupiah/bulan)</p>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-1.5">
                 <Label className="text-xs font-semibold" style={{ color: "var(--foreground)" }}>Minimum *</Label>
-                <Input type="number" placeholder="e.g. 65000" value={form.salaryMin} onChange={(e) => set("salaryMin", e.target.value)} className="h-9 text-sm" />
+                <Input type="number" placeholder="e.g. 30000000" value={form.salaryMin} onChange={(e) => set("salaryMin", e.target.value)} className="h-9 text-sm" />
               </div>
               <div className="flex flex-col gap-1.5">
                 <Label className="text-xs font-semibold" style={{ color: "var(--foreground)" }}>Maximum *</Label>
-                <Input type="number" placeholder="e.g. 90000" value={form.salaryMax} onChange={(e) => set("salaryMax", e.target.value)} className="h-9 text-sm" />
+                <Input type="number" placeholder="e.g. 55000000" value={form.salaryMax} onChange={(e) => set("salaryMax", e.target.value)} className="h-9 text-sm" />
               </div>
             </div>
           </div>
@@ -235,9 +236,9 @@ export default function CreatePositionPage() {
               { label: "Grade", value: form.grade || "—" },
               { label: "Level", value: form.level || "—" },
               { label: "Required HC", value: form.requiredHC },
-              { label: "Salary Range", value: form.salaryMin && form.salaryMax ? `$${Number(form.salaryMin)/1000}K – $${Number(form.salaryMax)/1000}K` : "—" },
-              { label: "Annual Cost (min)", value: annualCostMin > 0 ? `$${(annualCostMin/1000).toFixed(0)}K` : "—", color: "var(--destructive)" },
-              { label: "Annual Cost (max)", value: annualCostMax > 0 ? `$${(annualCostMax/1000).toFixed(0)}K` : "—", color: "var(--destructive)" },
+              { label: "Salary Range", value: form.salaryMin && form.salaryMax ? `${formatRupiah(Number(form.salaryMin))} – ${formatRupiah(Number(form.salaryMax))}` : "—" },
+              { label: "Annual Cost (min)", value: annualCostMin > 0 ? formatRupiah(annualCostMin * 12) : "—", color: "var(--destructive)" },
+              { label: "Annual Cost (max)", value: annualCostMax > 0 ? formatRupiah(annualCostMax * 12) : "—", color: "var(--destructive)" },
               { label: "Competencies", value: form.competencies.length > 0 ? `${form.competencies.length} added` : "None" },
             ].map((row) => (
               <div key={row.label} className="flex justify-between text-xs py-1.5 border-b" style={{ borderColor: "var(--border)" }}>

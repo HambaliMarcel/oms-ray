@@ -7,15 +7,13 @@ import {
   Download, Filter, X, ArrowUpRight, DollarSign, Percent,
 } from "lucide-react";
 import {
-  employeesAll, departments, positions, scenarios,
-} from "@/lib/oms-data";
+  unifiedEmployeesAll as employeesAll, unifiedDepartments as departments, unifiedPositions as positions, unifiedScenarios as scenarios,
+} from "@/lib/om-metrics";
+import { formatRupiah } from "@/lib/currency";
 
 // Format helper
 const fmt = (n: number) => {
-  if (n >= 1e9) return `${(n / 1e9).toFixed(2)}B`;
-  if (n >= 1e6) return `${(n / 1e6).toFixed(2)}M`;
-  if (n >= 1e3) return `${(n / 1e3).toFixed(0)}K`;
-  return n.toLocaleString();
+  return formatRupiah(n);
 };
 
 // Deterministic seed

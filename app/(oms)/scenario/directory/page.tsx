@@ -24,7 +24,8 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { scenarios as initialScenarios } from "@/lib/oms-data";
+import { unifiedScenarios as initialScenarios } from "@/lib/om-metrics";
+import { formatRupiah } from "@/lib/currency";
 
 type Scenario = (typeof initialScenarios)[number];
 
@@ -44,9 +45,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 function formatCost(n: number) {
-  if (Math.abs(n) >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
-  if (Math.abs(n) >= 1_000) return (n / 1_000).toFixed(0) + "K";
-  return n.toString();
+  return formatRupiah(n);
 }
 
 function ImpactCell({ value, suffix = "" }: { value: number; suffix?: string }) {
@@ -63,8 +62,8 @@ function ImpactCell({ value, suffix = "" }: { value: number; suffix?: string }) 
     <span className={`inline-flex items-center gap-1 font-medium text-sm ${color}`}>
       <Icon className="w-3.5 h-3.5" />
       {positive ? "+" : ""}
-      {suffix === "$" ? formatCost(value) : value}
-      {suffix !== "$" ? suffix : ""}
+      {suffix === "cost" ? formatCost(value) : value}
+      {suffix !== "cost" ? suffix : ""}
     </span>
   );
 }
@@ -317,7 +316,7 @@ export default function ScenarioDirectoryPage() {
                         <ImpactCell value={hcImpact} suffix=" FTE" />
                       </td>
                       <td className="px-4 py-3 text-right">
-                        <ImpactCell value={costImpact} suffix="$" />
+                        <ImpactCell value={costImpact} suffix="cost" />
                       </td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end gap-1">

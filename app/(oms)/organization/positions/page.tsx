@@ -19,6 +19,7 @@ import {
 import {
   BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell,
 } from "recharts";
+import { formatRupiah } from "@/lib/currency";
 
 export default function PositionDirectoryPage() {
   const [search, setSearch] = useState("");
@@ -173,7 +174,9 @@ export default function PositionDirectoryPage() {
                           <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "var(--primary-light)" }}>
                             <Briefcase className="w-3.5 h-3.5" style={{ color: "var(--primary)" }} />
                           </div>
-                          <span className="text-xs font-semibold" style={{ color: "var(--foreground)" }}>{pos.title}</span>
+                          <Link href={`/organization/positions/${pos.id}`} className="text-xs font-semibold hover:underline" style={{ color: "var(--foreground)" }}>
+                            {pos.title}
+                          </Link>
                         </div>
                       </td>
                       <td className="py-3 px-4 text-xs" style={{ color: "var(--muted-foreground)" }}>{pos.dept}</td>
@@ -193,7 +196,7 @@ export default function PositionDirectoryPage() {
                         </span>
                       </td>
                       <td className="py-3 px-4 text-xs" style={{ color: "var(--muted-foreground)" }}>
-                        ${(pos.salaryMin / 1000).toFixed(0)}K – ${(pos.salaryMax / 1000).toFixed(0)}K
+                        {formatRupiah(pos.salaryMin)} – {formatRupiah(pos.salaryMax)}
                       </td>
                       <td className="py-3 px-4 text-xs" style={{ color: "var(--muted-foreground)" }}>{deptMeta?.head ?? "N/A"}</td>
                       <td className="py-3 px-4">

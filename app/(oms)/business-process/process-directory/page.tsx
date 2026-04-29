@@ -5,7 +5,7 @@ import Link from "next/link";
 import { TopBar } from "@/components/oms/topbar";
 import { AiAssistant } from "@/components/oms/ai-assistant";
 import { useRouter } from "next/navigation";
-import { processList, activityList, departments } from "@/lib/oms-data";
+import { unifiedProcessList as processList, unifiedActivityList as activityList, unifiedDepartments as departments } from "@/lib/om-metrics";
 import {
   Search,
   Plus,

@@ -8,9 +8,16 @@ import {
   Filter, ArrowUpRight, Zap, Building2, Layers, Activity,
 } from "lucide-react";
 import {
-  costAnalysis, costMonthlyTrend, employeesAll, departments, positions, scenarios,
-  workloadByDepartment, processes,
-} from "@/lib/oms-data";
+  unifiedCostAnalysis as costAnalysis,
+  unifiedCostMonthlyTrend as costMonthlyTrend,
+  unifiedEmployeesAll as employeesAll,
+  unifiedDepartments as departments,
+  unifiedPositions as positions,
+  unifiedScenarios as scenarios,
+  unifiedWorkloadByDepartment as workloadByDepartment,
+  unifiedProcesses as processes,
+} from "@/lib/om-metrics";
+import { formatRupiah } from "@/lib/currency";
 import {
   ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   PieChart, Pie, Cell, BarChart, Bar, ScatterChart, Scatter, ZAxis, AreaChart, Area,
@@ -740,10 +747,7 @@ export default function CostOverviewPage() {
 // HELPER COMPONENTS
 // ============================================================
 const fmt = (n: number) => {
-  if (n >= 1e9) return `${(n / 1e9).toFixed(2)}B`;
-  if (n >= 1e6) return `${(n / 1e6).toFixed(2)}M`;
-  if (n >= 1e3) return `${(n / 1e3).toFixed(0)}K`;
-  return n.toLocaleString();
+  return formatRupiah(n);
 };
 
 function SectionCard({ title, subtitle, icon, children }: { title: string; subtitle?: string; icon?: React.ReactNode; children: React.ReactNode }) {

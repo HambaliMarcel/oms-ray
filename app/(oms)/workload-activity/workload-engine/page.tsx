@@ -56,16 +56,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  COMPLEXITY_MULTIPLIERS,
-  WORKLOAD_CONSTANTS,
-  departments,
-  kpiList,
-  processList,
-  workloadActivities,
-  workloadByDepartment,
-  workloadByRole,
-  workloadHeatmap,
-} from "@/lib/oms-data";
+  unifiedComplexityMultipliers as COMPLEXITY_MULTIPLIERS,
+  unifiedWORKLOAD_CONSTANTS as WORKLOAD_CONSTANTS,
+  unifiedDepartments as departments,
+  unifiedKpiList as kpiList,
+  unifiedProcessList as processList,
+  unifiedWorkloadActivities as workloadActivities,
+  unifiedWorkloadByDepartment as workloadByDepartment,
+  unifiedWorkloadByRole as workloadByRole,
+  unifiedWorkloadHeatmap as workloadHeatmap,
+} from "@/lib/om-metrics";
 
 function utilColor(util: number) {
   if (util > 110) return "text-destructive";
@@ -583,7 +583,7 @@ Utilization = Adjusted Workload ÷ (Assigned HC × Effective Capacity per FTE)`}
                   <thead>
                     <tr>
                       <th className="text-left font-medium text-muted-foreground" />
-                      {workloadHeatmap.departments.map((d) => (
+                      {workloadHeatmap.departments.map((d: string) => (
                         <th
                           key={d}
                           className="px-1 py-1 text-left font-medium text-muted-foreground"
@@ -594,14 +594,14 @@ Utilization = Adjusted Workload ÷ (Assigned HC × Effective Capacity per FTE)`}
                     </tr>
                   </thead>
                   <tbody>
-                    {workloadHeatmap.roles.map((role) => (
+                    {workloadHeatmap.roles.map((role: string) => (
                       <tr key={role}>
                         <th className="max-w-[180px] truncate pr-2 text-left text-xs font-medium text-muted-foreground">
                           {role}
                         </th>
-                        {workloadHeatmap.departments.map((dept) => {
+                        {workloadHeatmap.departments.map((dept: string) => {
                           const cell = workloadHeatmap.cells.find(
-                            (c) => c.role === role && c.dept === dept,
+                            (c: (typeof workloadHeatmap.cells)[number]) => c.role === role && c.dept === dept,
                           );
                           const util = cell?.utilization ?? 0;
                           return (
@@ -768,11 +768,14 @@ Utilization = Adjusted Workload ÷ (Assigned HC × Effective Capacity per FTE)`}
                     <tr
                       key={`${r.deptId}-${r.role}`}
                       className="cursor-pointer border-t hover:bg-muted/30"
-                      onClick={() =>
-                        router.push(
-                          `/workload/directory?dept=${r.deptId}&position=${encodeURIComponent(r.role)}`,
-                        )
-                      }
+                      onClick={() => {
+                        const target = workloadActivities.find((a) => a.departmentId === r.deptId && a.responsiblePosition === r.role);
+                        if (target) {
+                          router.push(`/workload-activity/activity-directory/${target.id}`);
+                          return;
+                        }
+                        router.push(`/workload-activity/activity-directory?dept=${r.deptId}`);
+                      }}
                     >
                       <td className="px-4 py-2 font-medium">{r.dept}</td>
                       <td className="px-4 py-2 text-muted-foreground">{r.role}</td>

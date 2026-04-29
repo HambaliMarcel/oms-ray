@@ -6,11 +6,11 @@ import { TopBar } from "@/components/oms/topbar";
 import { AiAssistant } from "@/components/oms/ai-assistant";
 import { useRouter } from "next/navigation";
 import {
-  processList,
-  processChains,
-  activityList,
-  departments,
-} from "@/lib/oms-data";
+  unifiedProcessList as processList,
+  unifiedProcessChains as processChains,
+  unifiedActivityList as activityList,
+  unifiedDepartments as departments,
+} from "@/lib/om-metrics";
 import {
   ResponsiveContainer,
   PieChart,

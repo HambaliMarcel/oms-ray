@@ -16,9 +16,9 @@ const aiResponses: Record<string, string> = {
   "Fix workforce gap":
     "Technology has a gap of 2 critical roles. I recommend fast-tracking pipelines R001 (Software Engineer) and R006 (Data Scientist). Estimated fill time: 3–4 weeks with executive sponsorship.",
   "Optimize cost":
-    "Operations is at 91% budget utilization. Marketing has a $42K under-utilization. Recommend reallocation + a hiring freeze on G3 roles in non-critical depts to save $120K in Q2.",
+    "Operations is at 91% budget utilization. Marketing has Rp 42 Juta under-utilization. Recommend reallocation + a hiring freeze on G3 roles in non-critical departments to save Rp 120 Juta in Q2.",
   "Run scenario":
-    "3 scenarios are pre-modeled: (1) Dept merge — saves $180K/yr, (2) Remote-first — reduces office cost by 22%, (3) Upskilling in lieu of hiring — fills 5 roles internally. Navigate to Scenario Planning to run simulations.",
+    "3 scenarios are pre-modeled: (1) Dept merge — saves Rp 180 Juta/tahun, (2) Remote-first — reduces office cost by 22%, (3) Upskilling in lieu of hiring — fills 5 roles internally. Navigate to Scenario Planning to run simulations.",
   default:
     "I can help you analyze workforce gaps, optimize costs, generate scenarios, or review governance risks. What would you like to focus on today?",
 };

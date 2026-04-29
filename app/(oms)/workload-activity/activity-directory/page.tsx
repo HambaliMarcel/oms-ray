@@ -52,12 +52,12 @@ import {
 import { useRouter } from "next/navigation";
 import { ActivityForm } from "@/components/workload/activity-form";
 import {
-  workloadActivities,
-  processList,
-  departments,
-  kpiList,
+  unifiedWorkloadActivities as workloadActivities,
+  unifiedProcessList as processList,
+  unifiedDepartments as departments,
+  unifiedKpiList as kpiList,
   type WorkloadActivity,
-} from "@/lib/oms-data";
+} from "@/lib/om-metrics";
 
 const STAFFING_FILTERS = [
   "All",

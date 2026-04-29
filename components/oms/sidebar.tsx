@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { navModules } from "@/lib/oms-data";
 import {
   Bot,
+  BrainCircuit,
   Building2,
   ChevronRight,
   Clock,
@@ -27,10 +28,11 @@ const iconMap: Record<string, React.ElementType> = {
   GitBranch,
   BarChart3,
   Clock,
+  BrainCircuit,
 };
 
-const ACTIVE_BG = "#2563EB";
-const ACTIVE_FG = "#FFFFFF";
+const ACTIVE_BG = "#E8F0FF";
+const ACTIVE_FG = "#1D4ED8";
 const HOVER_BG = "#F1F5F9";
 
 export function Sidebar() {
@@ -55,9 +57,9 @@ export function Sidebar() {
         "fixed inset-y-0 left-0 z-30 flex flex-col overflow-hidden border-r bg-white transition-[width] duration-300",
         isExpanded ? "w-[220px]" : "w-[72px]"
       )}
-      style={{ borderColor: "#E2E8F0" }}
+      style={{ borderColor: "#EEF2F7" }}
     >
-      <div className={cn("flex items-center border-b px-3 py-4", isExpanded ? "justify-between" : "justify-center")} style={{ borderColor: "#E2E8F0" }}>
+      <div className={cn("flex items-center border-b px-3 py-4", isExpanded ? "justify-between" : "justify-center")} style={{ borderColor: "#EEF2F7" }}>
         <div className="h-10 w-10 rounded-2xl bg-[#F1F5F9] flex items-center justify-center">
           <Sparkles className="h-5 w-5 text-[#2563EB]" />
         </div>
@@ -81,7 +83,7 @@ export function Sidebar() {
             isExpanded ? "h-11 gap-3 px-3" : "h-11 justify-center",
           );
           const headerStyle: React.CSSProperties = moduleActive
-            ? { background: ACTIVE_BG, color: ACTIVE_FG, boxShadow: "0 8px 18px rgba(37,99,235,0.22)" }
+            ? { background: ACTIVE_BG, color: ACTIVE_FG }
             : { color: "#64748B" };
 
           return (
@@ -123,12 +125,12 @@ export function Sidebar() {
                         key={sub.path}
                         href={sub.path}
                         className={cn(
-                          "flex h-9 items-center rounded-xl px-3 text-sm transition-colors",
+                          "relative flex h-9 items-center rounded-xl px-3 text-sm transition-colors",
                           activeSub ? "font-semibold" : "font-medium"
                         )}
                         style={
                           activeSub
-                            ? { background: "#EFF6FF", color: "#2563EB" }
+                            ? { background: "#E8F0FF", color: "#1D4ED8" }
                             : { color: "#64748B" }
                         }
                         onMouseEnter={(e) => {
@@ -138,6 +140,7 @@ export function Sidebar() {
                           if (!activeSub) (e.currentTarget as HTMLElement).style.background = "";
                         }}
                       >
+                        {activeSub && <span className="absolute left-0 h-5 w-0.5 rounded-full bg-[#2563EB]" />}
                         {sub.label}
                       </Link>
                     );
@@ -149,7 +152,7 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="border-t px-2 py-3 space-y-2" style={{ borderColor: "#E2E8F0" }}>
+      <div className="border-t px-2 py-3 space-y-2" style={{ borderColor: "#EEF2F7" }}>
         <button className={cn("w-full h-10 rounded-2xl flex items-center transition-colors hover:bg-[#F1F5F9]", isExpanded ? "px-3 gap-3" : "justify-center")}>
           <div className="h-8 w-8 rounded-full bg-[#F1F5F9] flex items-center justify-center">
             <User className="h-4 w-4 text-[#64748B]" />

@@ -29,11 +29,12 @@ import {
   Tooltip, Legend,
 } from "recharts";
 import {
-  departments as initialDepts,
-  positions as initialPositions,
-  scenarios,
-  processes,
-} from "@/lib/oms-data";
+  unifiedDepartments as initialDepts,
+  unifiedPositions as initialPositions,
+  unifiedScenarios as scenarios,
+  unifiedProcesses as processes,
+} from "@/lib/om-metrics";
+import { formatRupiah } from "@/lib/currency";
 
 type Dept = (typeof initialDepts)[number];
 type Pos  = (typeof initialPositions)[number];
@@ -46,9 +47,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 function fmtCost(n: number) {
-  if (Math.abs(n) >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
-  if (Math.abs(n) >= 1_000) return (n / 1_000).toFixed(0) + "K";
-  return Math.round(n).toString();
+  return formatRupiah(n);
 }
 
 export default function ScenarioBuilderPage() {
@@ -87,7 +86,7 @@ export default function ScenarioBuilderPage() {
   const [toast, setToast] = useState("");
 
   const [newDept, setNewDept] = useState({ name: "", code: "", headPlan: 10, head: "" });
-  const [newPos, setNewPos] = useState({ title: "", deptId: "D02", level: "Staff", grade: "G5", salaryMin: 60000, salaryMax: 90000 });
+  const [newPos, setNewPos] = useState({ title: "", deptId: "D02", level: "Staff", grade: "G5", salaryMin: 12000000, salaryMax: 22000000 });
 
   function showToast(msg: string) {
     setToast(msg);
@@ -401,7 +400,7 @@ export default function ScenarioBuilderPage() {
                             {p.dept} · {(p as any).level || p.grade} · {p.filled}/{p.planned}
                           </div>
                           <div className="text-[10px] text-muted-foreground">
-                            ${(p.salaryMin/1000).toFixed(0)}K – ${(p.salaryMax/1000).toFixed(0)}K
+                            {formatRupiah(p.salaryMin)} – {formatRupiah(p.salaryMax)}
                           </div>
                         </div>
                         <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition">
@@ -633,7 +632,7 @@ export default function ScenarioBuilderPage() {
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <div className="text-sm font-semibold text-foreground">3. Cost Impact</div>
-                  <div className="text-xs text-muted-foreground">Annual cost by department (in $K)</div>
+                  <div className="text-xs text-muted-foreground">Annual cost by department (Rupiah)</div>
                 </div>
                 <Badge variant="outline" className={`text-xs ${deltas.cost >= 0 ? "text-rose-700 border-rose-200 bg-rose-50" : "text-emerald-700 border-emerald-200 bg-emerald-50"}`}>
                   {deltas.cost >= 0 ? "+" : ""}{fmtCost(deltas.cost)}
@@ -645,7 +644,7 @@ export default function ScenarioBuilderPage() {
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                     <XAxis dataKey="dept" tick={{ fontSize: 10 }} />
                     <YAxis tick={{ fontSize: 10 }} />
-                    <Tooltip contentStyle={{ fontSize: 11 }} formatter={(v: number) => `$${v}K`} />
+                    <Tooltip contentStyle={{ fontSize: 11 }} formatter={(v: number) => formatRupiah(v)} />
                     <Legend wrapperStyle={{ fontSize: 11 }} />
                     <Bar dataKey="Baseline" fill="#94a3b8" radius={[4, 4, 0, 0]} />
                     <Bar dataKey="Scenario" fill="#10b981" radius={[4, 4, 0, 0]} />
@@ -967,16 +966,16 @@ function SummaryRow({
       <div>
         <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">{label}</div>
         <div className="text-lg font-bold text-foreground mt-0.5">
-          {isCost ? `$${fmtCost(value)}` : value.toFixed(precision)}{suffix}
+          {isCost ? fmtCost(value) : value.toFixed(precision)}{suffix}
         </div>
         <div className="text-[10px] text-muted-foreground">
-          from {isCost ? `$${fmtCost(base)}` : base.toFixed(precision)}{suffix}
+          from {isCost ? fmtCost(base) : base.toFixed(precision)}{suffix}
         </div>
       </div>
       <div className={`flex flex-col items-end gap-0.5 ${colorClass}`}>
         {neutral ? null : positive ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
         <div className="text-sm font-semibold">
-          {neutral ? "0" : (positive ? "+" : "") + (isCost ? `$${fmtCost(Math.abs(delta))}` : delta.toFixed(precision))}
+          {neutral ? "0" : (positive ? "+" : "") + (isCost ? fmtCost(Math.abs(delta)) : delta.toFixed(precision))}
           {!isCost && suffix}
         </div>
       </div>

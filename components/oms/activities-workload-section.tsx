@@ -374,8 +374,8 @@ export function ActivitiesWorkloadSection(props: Props) {
                         {k.kpiName}
                       </Link>
                     </td>
-                    <td className="py-2 px-3 tabular-nums" style={{ color: "var(--muted-foreground)" }}>{k.target}{k.unit && k.unit !== "$" ? ` ${k.unit}` : ""}</td>
-                    <td className="py-2 px-3 tabular-nums font-semibold" style={{ color: "var(--foreground)" }}>{k.actual}{k.unit && k.unit !== "$" ? ` ${k.unit}` : ""}</td>
+                    <td className="py-2 px-3 tabular-nums" style={{ color: "var(--muted-foreground)" }}>{k.target}{k.unit ? ` ${k.unit.replace("$", "Rp").replace("USD", "Rp")}` : ""}</td>
+                    <td className="py-2 px-3 tabular-nums font-semibold" style={{ color: "var(--foreground)" }}>{k.actual}{k.unit ? ` ${k.unit.replace("$", "Rp").replace("USD", "Rp")}` : ""}</td>
                     <td className="py-2 px-3">
                       <div className="flex items-center gap-2">
                         <div className="w-20 h-1.5 rounded-full" style={{ background: "var(--muted)" }}>

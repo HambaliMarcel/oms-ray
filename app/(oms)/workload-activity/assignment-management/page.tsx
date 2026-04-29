@@ -35,12 +35,12 @@ import {
 import { useRouter } from "next/navigation";
 import { ActivityForm } from "@/components/workload/activity-form";
 import {
-  workloadActivities,
-  employeesAll,
-  departments,
-  WORKLOAD_CONSTANTS,
+  unifiedWorkloadActivities as workloadActivities,
+  unifiedEmployeesAll as employeesAll,
+  unifiedDepartments as departments,
+  unifiedWORKLOAD_CONSTANTS as WORKLOAD_CONSTANTS,
   type WorkloadActivity,
-} from "@/lib/oms-data";
+} from "@/lib/om-metrics";
 
 // ---- column definitions ----
 type KanbanCol = {

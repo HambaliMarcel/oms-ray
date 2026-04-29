@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { formatRupiah } from "@/lib/currency";
 
 const GRADES = ["G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9"];
 
@@ -20,8 +21,8 @@ export default function EditPositionPage({ params }: { params: Promise<{ id: str
     dept: position?.dept ?? "",
     grade: position?.grade ?? "G4",
     planned: String(position?.planned ?? 1),
-    salaryMin: String(position?.salaryMin ?? 60000),
-    salaryMax: String(position?.salaryMax ?? 90000),
+    salaryMin: String(position?.salaryMin ?? 30000000),
+    salaryMax: String(position?.salaryMax ?? 55000000),
     reportingTo: "",
     status: position?.status ?? "Filled",
   });
@@ -118,11 +119,11 @@ export default function EditPositionPage({ params }: { params: Promise<{ id: str
               <Input type="number" min={1} value={form.planned} onChange={(e) => set("planned", e.target.value)} className="text-sm" />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold" style={{ color: "var(--foreground)" }}>Salary Min (USD/yr)</label>
+              <label className="text-xs font-semibold" style={{ color: "var(--foreground)" }}>Salary Min (Rupiah/bulan)</label>
               <Input type="number" step={1000} value={form.salaryMin} onChange={(e) => set("salaryMin", e.target.value)} className="text-sm" />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold" style={{ color: "var(--foreground)" }}>Salary Max (USD/yr)</label>
+              <label className="text-xs font-semibold" style={{ color: "var(--foreground)" }}>Salary Max (Rupiah/bulan)</label>
               <Input type="number" step={1000} value={form.salaryMax} onChange={(e) => set("salaryMax", e.target.value)} className="text-sm" />
             </div>
             <div className="flex flex-col gap-1.5">
@@ -174,9 +175,9 @@ export default function EditPositionPage({ params }: { params: Promise<{ id: str
             { label: "Planned HC",    value: form.planned },
             { label: "Department",    value: form.dept || "—" },
             { label: "Grade",         value: form.grade },
-            { label: "Annual Min",    value: `$${(Number(form.salaryMin) / 1000).toFixed(0)}K` },
-            { label: "Annual Max",    value: `$${(Number(form.salaryMax) / 1000).toFixed(0)}K` },
-            { label: "Salary Range",  value: `$${(salaryGap / 1000).toFixed(0)}K spread` },
+            { label: "Annual Min",    value: formatRupiah(Number(form.salaryMin) * 12) },
+            { label: "Annual Max",    value: formatRupiah(Number(form.salaryMax) * 12) },
+            { label: "Salary Range",  value: `${formatRupiah(Math.max(salaryGap, 0))} spread` },
           ].map((f) => (
             <div key={f.label} className="flex justify-between py-2 border-b text-xs" style={{ borderColor: "var(--border)" }}>
               <span style={{ color: "var(--muted-foreground)" }}>{f.label}</span>

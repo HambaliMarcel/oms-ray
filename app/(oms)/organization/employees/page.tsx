@@ -18,6 +18,7 @@ import {
   BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell,
   LineChart, Line,
 } from "recharts";
+import { formatRupiah } from "@/lib/currency";
 
 type Employee = (typeof employees)[0];
 
@@ -142,11 +143,11 @@ function EmployeeDetailPanel({ employee, onClose }: { employee: Employee; onClos
           <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--muted-foreground)" }}>Compensation</p>
           <div className="flex justify-between text-xs">
             <span style={{ color: "var(--muted-foreground)" }}>Annual Salary</span>
-            <span className="font-bold text-sm" style={{ color: "var(--primary)" }}>${employee.cost.toLocaleString()}</span>
+            <span className="font-bold text-sm" style={{ color: "var(--primary)" }}>{formatRupiah(employee.cost)}</span>
           </div>
           <div className="flex justify-between text-xs">
             <span style={{ color: "var(--muted-foreground)" }}>Monthly</span>
-            <span className="font-semibold" style={{ color: "var(--foreground)" }}>${Math.round(employee.cost / 12).toLocaleString()}</span>
+            <span className="font-semibold" style={{ color: "var(--foreground)" }}>{formatRupiah(Math.round(employee.cost / 12))}</span>
           </div>
         </div>
 

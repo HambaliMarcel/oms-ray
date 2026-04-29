@@ -209,7 +209,7 @@ export const kpiList = [
   { id: "K004", name: "Process Efficiency",     category: "Operations", unit: "%",  target: 85, actual: 82, current: 82, status: "At Risk",  trend: "Up",   change: 3.1,  owner: "Sari Indah"    },
   { id: "K005", name: "Audit Compliance",       category: "Governance", unit: "%",  target: 100, actual: 98, current: 98, status: "On Track", trend: "Up",   change: 0.5,  owner: "Fitri Handayani" },
   { id: "K006", name: "Employee Satisfaction",  category: "Workforce",  unit: "/10",target: 8,  actual: 7.6, current: 7.6, status: "At Risk",  trend: "Down", change: -0.3, owner: "Lestari Putri" },
-  { id: "K007", name: "Cost per Hire",          category: "Recruitment",unit: "$",  target: 5000,actual: 6200,current: 6200,status: "Critical", trend: "Up",   change: 18.0, owner: "Hana Setiawan" },
+  { id: "K007", name: "Cost per Hire",          category: "Recruitment",unit: "Rp", target: 75000000,actual: 92000000,current: 92000000,status: "Critical", trend: "Up",   change: 18.0, owner: "Hana Setiawan" },
   { id: "K008", name: "Retention Rate",         category: "Workforce",  unit: "%",  target: 90, actual: 87, current: 87, status: "At Risk",  trend: "Down", change: -1.8, owner: "Lestari Putri" },
 ];
 
@@ -223,7 +223,7 @@ export const kpiData = {
   vacancy:     { value: 16,    target: 8,     status: "critical", trend: "+5.0%", prefix: "",  unit: ""   },
   hcGap:       { value: 312,   target: 150,   status: "critical", trend: "-3.4%", prefix: "",  unit: ""   },
   utilization: { value: 84,    target: 85,    status: "warning",  trend: "+1.8%", prefix: "",  unit: "%"  },
-  cost:        { value: 11.2,  target: 12,    status: "good",     trend: "-2.1%", prefix: "$", unit: "M"  },
+  cost:        { value: 24.8,  target: 26,    status: "good",     trend: "-2.1%", prefix: "Rp ", unit: "Miliar"  },
   kpiScore:    { value: 78,    target: 85,    status: "warning",  trend: "+4.2%", prefix: "",  unit: "%"  },
 } as const;
 
@@ -231,12 +231,12 @@ export const kpiData = {
 // MONTHLY TREND
 // ---------------------------------------------------------------------
 export const monthlyTrend = [
-  { month: "Jan", hcActual: 50, hcPlan: 52, costActual: 7800000, costPlan: 8000000, hires: 2, departures: 1 },
-  { month: "Feb", hcActual: 51, hcPlan: 53, costActual: 8000000, costPlan: 8100000, hires: 3, departures: 2 },
-  { month: "Mar", hcActual: 52, hcPlan: 53, costActual: 8200000, costPlan: 8200000, hires: 2, departures: 1 },
-  { month: "Apr", hcActual: 53, hcPlan: 54, costActual: 8500000, costPlan: 8400000, hires: 4, departures: 3 },
-  { month: "May", hcActual: 53, hcPlan: 55, costActual: 8500000, costPlan: 8600000, hires: 1, departures: 1 },
-  { month: "Jun", hcActual: 54, hcPlan: 56, costActual: 8700000, costPlan: 8800000, hires: 3, departures: 2 },
+  { month: "Jan", hcActual: 522, hcPlan: 536, costActual: 23200000000, costPlan: 23800000000, hires: 9, departures: 6 },
+  { month: "Feb", hcActual: 528, hcPlan: 540, costActual: 23600000000, costPlan: 24000000000, hires: 11, departures: 5 },
+  { month: "Mar", hcActual: 534, hcPlan: 546, costActual: 24100000000, costPlan: 24300000000, hires: 10, departures: 4 },
+  { month: "Apr", hcActual: 539, hcPlan: 550, costActual: 24800000000, costPlan: 24700000000, hires: 12, departures: 7 },
+  { month: "May", hcActual: 544, hcPlan: 556, costActual: 25100000000, costPlan: 25200000000, hires: 8, departures: 6 },
+  { month: "Jun", hcActual: 548, hcPlan: 560, costActual: 25400000000, costPlan: 25700000000, hires: 9, departures: 5 },
 ];
 
 // ---------------------------------------------------------------------
@@ -267,10 +267,10 @@ export const criticalAlerts = [
 // AI RECOMMENDATIONS
 // ---------------------------------------------------------------------
 export const aiRecommendations = [
-  { id: "AI001", title: "Optimize Recruitment Pipeline",   confidence: 92, impact: "High",     savings: 145000, action: "Streamline candidate screening with AI tools", category: "Process",  description: "Reduce avg time to hire from 45d to 32d by automating screening and scheduling.", priority: "High" },
-  { id: "AI002", title: "Reallocate Marketing Budget",     confidence: 86, impact: "Medium",   savings: 85000,  action: "Shift 15% from print to digital channels",     category: "Financial",description: "Digital channels show 38% higher ROI based on Q1 2026 data.",                  priority: "Medium" },
-  { id: "AI003", title: "Automate Approval Workflow",      confidence: 89, impact: "High",     savings: 120000, action: "Auto-approve requests below $10K threshold",   category: "Process",  description: "Will reduce manager workload by 12 hours/week.",                                priority: "High" },
-  { id: "AI004", title: "Cross-train Operations Team",     confidence: 78, impact: "Medium",   savings: 65000,  action: "Train 4 ops analysts on procurement systems",  category: "Workforce",description: "Reduce vendor delays by 25% through faster issue resolution.",                  priority: "Medium" },
+  { id: "AI001", title: "Optimize Recruitment Pipeline",   confidence: 92, impact: "High",     savings: 145000000, action: "Streamline candidate screening with AI tools", category: "Process",  description: "Reduce avg time to hire from 45d to 32d by automating screening and scheduling.", priority: "High" },
+  { id: "AI002", title: "Reallocate Marketing Budget",     confidence: 86, impact: "Medium",   savings: 85000000,  action: "Shift 15% from print to digital channels",     category: "Financial",description: "Digital channels show 38% higher ROI based on Q1 2026 data.",                  priority: "Medium" },
+  { id: "AI003", title: "Automate Approval Workflow",      confidence: 89, impact: "High",     savings: 120000000, action: "Auto-approve requests below Rp 150 Juta threshold",   category: "Process",  description: "Will reduce manager workload by 12 hours/week.",                                priority: "High" },
+  { id: "AI004", title: "Cross-train Operations Team",     confidence: 78, impact: "Medium",   savings: 65000000,  action: "Train 4 ops analysts on procurement systems",  category: "Workforce",description: "Reduce vendor delays by 25% through faster issue resolution.",                  priority: "Medium" },
 ];
 
 // ---------------------------------------------------------------------
@@ -369,43 +369,51 @@ const _rawCostAnalysis = [
 ];
 
 export const costAnalysis = _rawCostAnalysis.map((c) => {
-  const total = c.payroll + c.benefits + c.bonus; // Spec: Total = Salary + Benefits + Bonus
-  const spent = c.actual;
-  const variance = c.budget - spent;
-  const variancePct = Math.round(((spent - c.budget) / c.budget) * 1000) / 10;
-  const utilizationPct = Math.round((spent / c.budget) * 1000) / 10;
+  const scale = 1000;
+  const budget = c.budget * scale;
+  const forecast = c.forecast * scale;
+  const payroll = c.payroll * scale;
+  const benefits = c.benefits * scale;
+  const bonus = c.bonus * scale;
+  const training = c.training * scale;
+  const actual = c.actual * scale;
+  const total = payroll + benefits + bonus; // Spec: Total = Salary + Benefits + Bonus
+  const spent = actual;
+  const variance = budget - spent;
+  const variancePct = Math.round(((spent - budget) / budget) * 1000) / 10;
+  const utilizationPct = Math.round((spent / budget) * 1000) / 10;
   const avgCostPerEmp = Math.round(total / Math.max(1, c.headcount));
   const status =
-    spent > c.budget * 1.05 ? "Overspend"
-    : spent > c.budget      ? "Watch"
-    : spent > c.budget * 0.9 ? "On Track"
+    spent > budget * 1.05 ? "Overspend"
+    : spent > budget      ? "Watch"
+    : spent > budget * 0.9 ? "On Track"
     : "Under-utilised";
-  return { ...c, total, spent, variance, variancePct, utilizationPct, avgCostPerEmp, status };
+  return { ...c, budget, forecast, payroll, benefits, bonus, training, actual, total, spent, variance, variancePct, utilizationPct, avgCostPerEmp, status };
 });
 
 // Monthly company-wide cost trend (sum of payroll+benefits+bonus across departments)
 export const costMonthlyTrend = [
-  { month: "Nov 25", salary: 5380000, benefits: 1390000, bonus: 580000 },
-  { month: "Dec 25", salary: 5420000, benefits: 1395000, bonus: 720000 },
-  { month: "Jan 26", salary: 5500000, benefits: 1420000, bonus: 600000 },
-  { month: "Feb 26", salary: 5560000, benefits: 1440000, bonus: 615000 },
-  { month: "Mar 26", salary: 5630000, benefits: 1465000, bonus: 640000 },
-  { month: "Apr 26", salary: 5700000, benefits: 1490000, bonus: 660000 },
+  { month: "Nov 25", salary: 19600000000, benefits: 3200000000, bonus: 1450000000 },
+  { month: "Dec 25", salary: 20100000000, benefits: 3260000000, bonus: 1520000000 },
+  { month: "Jan 26", salary: 20500000000, benefits: 3320000000, bonus: 1480000000 },
+  { month: "Feb 26", salary: 20900000000, benefits: 3380000000, bonus: 1530000000 },
+  { month: "Mar 26", salary: 21300000000, benefits: 3440000000, bonus: 1560000000 },
+  { month: "Apr 26", salary: 21600000000, benefits: 3510000000, bonus: 1590000000 },
 ].map((m) => ({ ...m, total: m.salary + m.benefits + m.bonus }));
 
 // ---------------------------------------------------------------------
-// COST VS BUDGET (dashboard widget — values in $K)
+// COST VS BUDGET (dashboard widget — values in Rupiah)
 // ---------------------------------------------------------------------
 export const costVsBudget = costAnalysis.map((c) => ({
   dept: c.dept,
-  budget: Math.round(c.budget / 1000),
-  actual: Math.round(c.actual / 1000),
+  budget: c.budget,
+  actual: c.actual,
 }));
 
 // ---------------------------------------------------------------------
 // SCENARIOS
 // ---------------------------------------------------------------------
-export const scenarios = [
+const _rawScenarios = [
   { id: "S000", name: "Baseline (Current)",                description: "Current organization state — no modifications",               type: "Baseline",     status: "Active",    createdBy: "System",          lastUpdated: "2026-04-01", hc: 246, hcImpact: 0,   cost: 40250000, costImpact: 0,    util: 84.2, kpi: 82 },
   { id: "S001", name: "10% Growth Q3 2026",                description: "Aggressive growth across Engineering and Sales",              type: "Growth",       status: "Approved",  createdBy: "Hendra Saputra",  lastUpdated: "2026-04-22", hc: 271, hcImpact: 25,  cost: 44275000, costImpact: 4025000,  util: 79.8, kpi: 86 },
   { id: "S002", name: "Cost Reduction Plan",               description: "10% cost reduction through restructuring and attrition",      type: "Cost",         status: "Submitted", createdBy: "Sri Mulyani",     lastUpdated: "2026-04-25", hc: 230, hcImpact: -16, cost: 36225000, costImpact: -4025000, util: 92.5, kpi: 76 },
@@ -429,6 +437,11 @@ export const scenarios = [
   { id: "S020", name: "Aggressive Cost Cut",               description: "20% cost reduction across all departments",                   type: "Cost",         status: "Draft",     createdBy: "Sri Mulyani",     lastUpdated: "2026-04-29", hc: 211, hcImpact: -35, cost: 32200000, costImpact: -8050000, util: 96.8, kpi: 68 },
   { id: "S021", name: "Hybrid Future of Work",             description: "Long-term hybrid model with reduced real estate footprint",   type: "Restructuring",status: "Submitted", createdBy: "Hendra Saputra",  lastUpdated: "2026-04-22", hc: 246, hcImpact: 0,   cost: 37500000, costImpact: -2750000, util: 84.2, kpi: 86 },
 ];
+export const scenarios = _rawScenarios.map((s) => ({
+  ...s,
+  cost: s.cost * 1000,
+  costImpact: s.costImpact * 1000,
+}));
 
 // ---------------------------------------------------------------------
 // APPROVAL WORKFLOWS & RECORDS
@@ -981,6 +994,15 @@ export const navModules = [
     submodules: [
       { label: "Cost Overview",  path: "/financial/overview" },
       { label: "Cost Breakdown", path: "/financial/breakdown" },
+    ],
+  },
+  {
+    id: "ai",
+    label: "AI Module",
+    icon: "BrainCircuit",
+    submodules: [
+      { label: "AI Insights", path: "/ai/insights" },
+      { label: "AI Job Position", path: "/ai/job-position" },
     ],
   },
 ];

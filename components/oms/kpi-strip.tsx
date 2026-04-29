@@ -1,9 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { kpiData } from "@/lib/oms-data";
+import { baselineCompanyMetrics, formatNumber, formatPercent } from "@/lib/om-metrics";
+import { formatRupiah } from "@/lib/currency";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 const kpiConfig = [
   { key: "headcount", label: "Headcount", icon: "HC" },
@@ -11,11 +11,11 @@ const kpiConfig = [
   { key: "vacancy", label: "Vacancy", icon: "VAC" },
   { key: "hcGap", label: "HC Gap", icon: "GAP" },
   { key: "utilization", label: "Utilization", icon: "UTL" },
-  { key: "cost", label: "Total Cost", icon: "$" },
+  { key: "cost", label: "Total Cost", icon: "CST" },
   { key: "kpiScore", label: "KPI Score", icon: "KPI" },
 ] as const;
 
-type KpiKey = keyof typeof kpiData;
+type KpiKey = "headcount" | "positions" | "vacancy" | "hcGap" | "utilization" | "cost" | "kpiScore";
 
 const kpiRouteMap: Record<string, string> = {
   headcount: "/organization/employees",
@@ -35,6 +35,15 @@ function statusColor(status: string) {
 
 export function KpiStrip() {
   const router = useRouter();
+  const kpiData = {
+    headcount: { value: baselineCompanyMetrics.totalEmployees, target: 580, status: "good", trend: "+1.8%", prefix: "", unit: "" },
+    positions: { value: baselineCompanyMetrics.totalPositions, target: 650, status: "warning", trend: "+0.9%", prefix: "", unit: "" },
+    vacancy: { value: baselineCompanyMetrics.vacantPositions, target: 60, status: "warning", trend: "-1.2%", prefix: "", unit: "" },
+    hcGap: { value: 18.4, target: 12, status: "critical", trend: "-0.6%", prefix: "", unit: " FTE" },
+    utilization: { value: baselineCompanyMetrics.averageUtilizationPct, target: 92, status: "good", trend: "+0.7%", prefix: "", unit: "%" },
+    cost: { value: baselineCompanyMetrics.totalMonthlyWorkforceCost, target: 26_000_000_000, status: "good", trend: "-1.5%", prefix: "", unit: "" },
+    kpiScore: { value: baselineCompanyMetrics.processKpiScore, target: 88, status: "warning", trend: "+0.4%", prefix: "", unit: "%" },
+  } as const;
 
   return (
     <div className="grid grid-cols-7 gap-3">
@@ -67,7 +76,13 @@ export function KpiStrip() {
 
             {/* Value */}
             <p className="text-2xl font-bold text-foreground leading-none mb-1">
-              {kpi.prefix}{typeof kpi.value === "number" && kpi.unit === "%" ? kpi.value : kpi.value.toLocaleString()}{kpi.unit}
+              {key === "cost"
+                ? formatRupiah(kpi.value)
+                : key === "utilization" || key === "kpiScore"
+                ? formatPercent(kpi.value)
+                : key === "hcGap"
+                ? `${kpi.value.toLocaleString("id-ID")} FTE`
+                : formatNumber(kpi.value)}
             </p>
 
             {/* Label */}
@@ -78,7 +93,13 @@ export function KpiStrip() {
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">Target</span>
                 <span className="text-xs font-medium text-foreground">
-                  {kpi.prefix}{kpi.target.toLocaleString()}{kpi.unit}
+                  {key === "cost"
+                    ? formatRupiah(kpi.target)
+                    : key === "utilization" || key === "kpiScore"
+                    ? formatPercent(kpi.target)
+                    : key === "hcGap"
+                    ? `${kpi.target.toLocaleString("id-ID")} FTE`
+                    : formatNumber(kpi.target)}
                 </span>
               </div>
             </div>

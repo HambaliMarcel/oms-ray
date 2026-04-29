@@ -73,7 +73,16 @@ export default function EmployeeDetailPage({ params }: { params: Promise<{ id: s
                   </span>
                 </div>
                 <div className="flex items-center gap-3 text-xs" style={{ color: "var(--muted-foreground)" }}>
-                  <span className="flex items-center gap-1"><Briefcase className="w-3 h-3" />{employee.position}</span>
+                  <span className="flex items-center gap-1">
+                    <Briefcase className="w-3 h-3" />
+                    {position ? (
+                      <Link href={`/organization/positions/${position.id}`} className="hover:underline">
+                        {employee.position}
+                      </Link>
+                    ) : (
+                      employee.position
+                    )}
+                  </span>
                   <span>·</span>
                   <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{employee.location}</span>
                   <span>·</span>

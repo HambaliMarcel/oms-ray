@@ -20,7 +20,8 @@ import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, Legend, RadarChart, Radar, PolarGrid, PolarAngleAxis,
 } from "recharts";
-import { scenarios, departments, positions } from "@/lib/oms-data";
+import { unifiedScenarios as scenarios, unifiedDepartments as departments, unifiedPositions as positions } from "@/lib/om-metrics";
+import { formatRupiah } from "@/lib/currency";
 
 const STATUS_COLORS: Record<string, string> = {
   Active:    "bg-slate-100 text-slate-700 border-slate-200",
@@ -30,9 +31,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 function fmtCost(n: number) {
-  if (Math.abs(n) >= 1_000_000) return "$" + (n / 1_000_000).toFixed(2) + "M";
-  if (Math.abs(n) >= 1_000) return "$" + (n / 1_000).toFixed(0) + "K";
-  return "$" + Math.round(n).toString();
+  return formatRupiah(n);
 }
 
 function pctDelta(a: number, b: number) {
@@ -108,7 +107,7 @@ export default function ScenarioComparisonPage() {
   // Charts: side-by-side metrics
   const metricChart = [
     { metric: "HC",          A: aMetrics.hc,                B: bMetrics.hc },
-    { metric: "Cost ($M)",   A: +(aMetrics.cost/1_000_000).toFixed(1), B: +(bMetrics.cost/1_000_000).toFixed(1) },
+    { metric: "Cost (Rp Miliar)",   A: +(aMetrics.cost/1_000_000_000).toFixed(2), B: +(bMetrics.cost/1_000_000_000).toFixed(2) },
     { metric: "Utilization", A: +aMetrics.util.toFixed(1),  B: +bMetrics.util.toFixed(1) },
     { metric: "KPI",         A: aMetrics.kpi,               B: bMetrics.kpi },
   ];
@@ -304,7 +303,7 @@ export default function ScenarioComparisonPage() {
                 <div className="flex items-center justify-between mb-3">
                   <div>
                     <div className="text-sm font-semibold text-foreground">Cost Distribution by Department</div>
-                    <div className="text-xs text-muted-foreground">Annual cost (in $K)</div>
+                    <div className="text-xs text-muted-foreground">Annual cost (Rupiah)</div>
                   </div>
                 </div>
                 <div className="h-[280px]">
@@ -313,7 +312,7 @@ export default function ScenarioComparisonPage() {
                       <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                       <XAxis dataKey="dept" tick={{ fontSize: 11 }} />
                       <YAxis tick={{ fontSize: 11 }} />
-                      <Tooltip contentStyle={{ fontSize: 11 }} formatter={(v: number) => `$${v}K`} />
+                      <Tooltip contentStyle={{ fontSize: 11 }} formatter={(v: number) => formatRupiah(v)} />
                       <Legend wrapperStyle={{ fontSize: 11 }} />
                       <Bar dataKey="A" fill="#94a3b8" radius={[4, 4, 0, 0]} />
                       <Bar dataKey="B" fill="#3b82f6" radius={[4, 4, 0, 0]} />

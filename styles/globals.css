@@ -28,7 +28,7 @@
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.875rem;
+  --radius: 1rem;
   --sidebar: #ffffff;
   --sidebar-foreground: #64748b;
   --sidebar-primary: #2563eb;
@@ -120,6 +120,36 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-muted text-foreground;
+    @apply bg-muted text-foreground antialiased;
+  }
+
+  h1 {
+    @apply text-[30px] font-bold tracking-[-0.02em] text-[#0F172A];
+  }
+
+  h2 {
+    @apply text-[18px] font-semibold text-[#0F172A];
+  }
+
+  h3 {
+    @apply text-[16px] font-semibold text-[#0F172A];
+  }
+
+  p {
+    @apply text-[14px];
+  }
+
+  [data-slot='card'],
+  [data-slot='button'],
+  [data-slot='input'],
+  [data-slot='textarea'],
+  [data-slot='table-row'],
+  [data-slot='select-trigger'],
+  [data-slot='select-content'] {
+    transition: all 180ms ease;
+  }
+
+  [data-slot='card']:hover {
+    box-shadow: 0 12px 26px rgba(15, 23, 42, 0.08);
   }
 }

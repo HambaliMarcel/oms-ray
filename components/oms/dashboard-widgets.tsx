@@ -11,6 +11,8 @@ import {
   monthlyTrend, approvalRecords,
 } from "@/lib/oms-data";
 import { AlertTriangle, ArrowUpRight, Clock } from "lucide-react";
+import { formatRupiah } from "@/lib/currency";
+import { unifiedProcessList as processList } from "@/lib/om-metrics";
 
 function WidgetCard({
   title,
@@ -45,11 +47,24 @@ function WidgetCard({
 
 // 1. Process Health
 export function ProcessHealthWidget() {
+  const router = useRouter();
   return (
     <WidgetCard title="Process Health" subtitle="All business processes" linkTo="/business-process/process-chain">
       <div className="space-y-2.5">
         {processHealth.map((p) => (
-          <div key={p.process}>
+          <button
+            key={p.process}
+            type="button"
+            className="w-full text-left"
+            onClick={() => {
+              const match = processList.find((x) => x.name === p.process || x.code === p.process);
+              if (match) {
+                router.push(`/business-process/process-directory/${match.id}`);
+                return;
+              }
+              router.push("/business-process/process-chain");
+            }}
+          >
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs text-foreground">{p.process}</span>
               <span className={`text-xs font-semibold ${p.health >= p.target ? "text-green-600" : p.health >= 75 ? "text-amber-600" : "text-red-600"}`}>
@@ -65,7 +80,7 @@ export function ProcessHealthWidget() {
                 }}
               />
             </div>
-          </div>
+          </button>
         ))}
       </div>
     </WidgetCard>
@@ -128,14 +143,14 @@ export function HcGapHeatmapWidget() {
 // 4. Cost vs Budget
 export function CostVsBudgetWidget() {
   return (
-    <WidgetCard title="Cost vs Budget" subtitle="USD thousands — current month" linkTo="/financial/overview">
+    <WidgetCard title="Cost vs Budget" subtitle="Rupiah — current month" linkTo="/financial/overview">
       <ResponsiveContainer width="100%" height={160}>
         <BarChart data={costVsBudget} barGap={2} barSize={10}>
           <XAxis dataKey="dept" tick={{ fontSize: 9, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} />
           <YAxis hide />
           <Tooltip
             contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 11 }}
-            formatter={(v: number) => [`$${v}K`, ""]}
+            formatter={(v: number) => [formatRupiah(v), ""]}
           />
           <Bar dataKey="budget" fill="var(--muted)" radius={[4, 4, 0, 0]} />
           <Bar dataKey="actual" fill="var(--primary)" radius={[4, 4, 0, 0]} />
@@ -199,7 +214,7 @@ export function GrowthTrendWidget() {
           <YAxis yAxisId="cost" hide domain={["auto", "auto"]} orientation="right" />
           <Tooltip
             contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 11 }}
-            formatter={(v: number, name: string) => name === "budget" ? [`$${v}M`, "Cost"] : [v, "Headcount"]}
+            formatter={(v: number, name: string) => name === "budget" ? [formatRupiah(v), "Cost"] : [v, "Headcount"]}
           />
           <Line yAxisId="hc" dataKey="headcount" stroke="var(--primary)" strokeWidth={2} dot={false} />
           <Line yAxisId="cost" dataKey="budget" stroke="var(--chart-4)" strokeWidth={2} dot={false} strokeDasharray="4 2" />
@@ -212,7 +227,7 @@ export function GrowthTrendWidget() {
         </div>
         <div>
           <p className="text-xs text-muted-foreground">Cost MoM</p>
-          <p className="text-sm font-semibold text-foreground">$0M <span className="text-xs font-normal text-muted-foreground">stable</span></p>
+          <p className="text-sm font-semibold text-foreground">{formatRupiah(0)} <span className="text-xs font-normal text-muted-foreground">stable</span></p>
         </div>
       </div>
     </WidgetCard>
