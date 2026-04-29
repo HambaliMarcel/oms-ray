@@ -1,23 +1,18 @@
 // @ts-nocheck
-// This file was auto-created and injected by v0.
-// DO NOT MODIFY THIS FILE DIRECTLY.
-// EDIT THE USER CONFIG IN ./next.user-config.mjs INSTEAD.
+// Optional overrides: create ./next.user-config.mjs (gitignored) — export default { ... } or an async function (phase, { defaultConfig }) => ({ ... }).
 
-import { fileURLToPath } from 'url'
+import fs from 'fs'
+import { fileURLToPath, pathToFileURL } from 'url'
 import path from 'path'
 
-const __v0_turbopack_root = undefined ?? path.dirname(fileURLToPath(import.meta.url))
+const projectRoot = path.dirname(fileURLToPath(import.meta.url))
+const userConfigPath = path.join(projectRoot, 'next.user-config.mjs')
 
-export default async function v0NextConfig(phase, { defaultConfig }) {
+export default async function nextConfig(phase, { defaultConfig }) {
   let userConfigImport = {}
-  try {
-    const mod = await import('./next.user-config.mjs')
+  if (fs.existsSync(userConfigPath)) {
+    const mod = await import(pathToFileURL(userConfigPath).href)
     userConfigImport = mod.default ?? mod
-  } catch (error) {
-    // In CI/deploy images, the optional user config can be absent.
-    if (error?.code !== 'ERR_MODULE_NOT_FOUND') {
-      throw error
-    }
   }
 
   const userConfig = typeof userConfigImport === 'function'
@@ -25,38 +20,33 @@ export default async function v0NextConfig(phase, { defaultConfig }) {
     : userConfigImport
 
   return {
-  ...userConfig,
-  distDir: '.next',
-  devIndicators: false,
-  images: {
-    ...userConfig.images,
-    unoptimized: process.env.NODE_ENV === 'development',
-  },
-  logging: {
-    ...userConfig.logging,
-    fetches: { fullUrl: true, hmrRefreshes: true },
-    browserToTerminal: true,
-  },
-  turbopack: {
-    ...userConfig.turbopack,
-    root: __v0_turbopack_root,
-  },
-  experimental: {
-    ...userConfig.experimental,
-    transitionIndicator: true,
-    turbopackFileSystemCacheForDev: process.env.TURBOPACK_PERSISTENT_CACHE !== 'false' && process.env.TURBOPACK_PERSISTENT_CACHE !== '0',
-    serverActions: {
-      ...userConfig.experimental?.serverActions,
-      allowedOrigins: [
-        ...(userConfig.experimental?.serverActions?.allowedOrigins || []),
-        '*.vusercontent.net',
-      ],
+    ...userConfig,
+    distDir: '.next',
+    devIndicators: false,
+    images: {
+      ...userConfig.images,
+      unoptimized: process.env.NODE_ENV === 'development',
     },
-  },
-  allowedDevOrigins: [
-    ...(userConfig.allowedDevOrigins || []),
-    '*.vusercontent.net',
-    '*.dev-vm.vusercontent.net',
-  ],
-}
+    logging: {
+      ...userConfig.logging,
+      fetches: { fullUrl: true, hmrRefreshes: true },
+      browserToTerminal: true,
+    },
+    turbopack: {
+      ...userConfig.turbopack,
+      root: projectRoot,
+    },
+    experimental: {
+      ...userConfig.experimental,
+      transitionIndicator: true,
+      turbopackFileSystemCacheForDev: process.env.TURBOPACK_PERSISTENT_CACHE !== 'false' && process.env.TURBOPACK_PERSISTENT_CACHE !== '0',
+      serverActions: {
+        ...userConfig.experimental?.serverActions,
+        allowedOrigins: [
+          ...(userConfig.experimental?.serverActions?.allowedOrigins || []),
+        ],
+      },
+    },
+    allowedDevOrigins: [...(userConfig.allowedDevOrigins || [])],
+  }
 }

@@ -13,8 +13,7 @@ export default function OmsError({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Surface the error to the dev console so v0 logs capture it.
-    console.error("[v0] OMS route error:", error);
+    console.error("[OMS] route error:", error);
   }, [error]);
 
   return (
