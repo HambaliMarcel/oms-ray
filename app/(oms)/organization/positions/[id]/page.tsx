@@ -27,9 +27,17 @@ export default function PositionDetailPage({ params }: { params: Promise<{ id: s
   const position = positions.find((p) => p.id === id);
 
   if (!position) {
+    console.warn("Position not found:", id);
     return (
-      <div className="flex min-h-[70vh] items-center justify-center">
-        <p className="text-sm text-muted-foreground">Position not found.</p>
+      <div className="flex min-h-[70vh] items-center justify-center p-4">
+        <div className="rounded-2xl bg-white p-6 text-center shadow-sm">
+          <p className="text-sm text-muted-foreground">Position not found.</p>
+          <div className="mt-4">
+            <Link href="/organization/positions">
+              <Button variant="outline" size="sm">Back to Position Directory</Button>
+            </Link>
+          </div>
+        </div>
       </div>
     );
   }

@@ -174,6 +174,7 @@ export const unifiedAIMetrics = {
 
 export const unifiedDepartments = legacyDepartments.map((d) => ({ ...d }));
 export const unifiedPositions = legacyPositions.map((p) => ({ ...p }));
+export const globalPositions = unifiedPositions;
 export const unifiedScenarios = legacyScenarios.map((s) => ({ ...s }));
 export const unifiedProcesses = legacyProcesses.map((p) => ({ ...p }));
 export const unifiedProcessList = legacyProcessList.map((p) => ({ ...p }));
@@ -338,65 +339,44 @@ export function buildOrganizationTree(
     return rows;
   };
 
-  const positionTemplates: Record<string, string[]> = {
-    D01: ["VP Operasi Terminal", "Manager Operasi Terminal", "Supervisor Yard Planning", "Supervisor Gate Operations", "Senior Officer Terminal Operations", "Officer Terminal Monitoring", "Operator Terminal"],
-    D06: ["VP Procurement", "Manager Procurement", "Senior Officer Vendor Management", "Officer Procurement Governance", "Staff Procurement Administration"],
-  };
-
   const companyTree = {
     company,
     directorates: directorates.map((dir) => {
       const departments = (departmentsByDir.get(dir.id) ?? []).map((dept) => {
         const summary = calculateDepartmentSummary(dept.id);
         const sourcePositions = pos.filter((p) => p.deptId === dept.id);
-        const baseTitles = positionTemplates[dept.id] ?? sourcePositions.map((p) => p.title);
-        const targetCount = Math.max(5, Math.min(18, Math.round(summary.positions / 8)));
-        const generated = Array.from({ length: targetCount }).map((_, idx) => {
-          const src = sourcePositions[idx % Math.max(sourcePositions.length, 1)] ?? pos[idx % pos.length];
-          const title = baseTitles[idx % baseTitles.length] ?? src.title;
+        const sourceWithFallback = sourcePositions.length > 0 ? sourcePositions : [pos.find((p) => p.deptId === dept.id) ?? pos[0]];
+        const generated = sourceWithFallback.map((src, idx) => {
+          const planned = Math.max((src as any).planned ?? 1, 1);
+          const filled = Math.max((src as any).filled ?? 0, 0);
+          const plannedMonthlyCost = normalizeCurrency((src as any).plannedMonthlyCost ?? (src as any).salaryMin ?? 25_000_000);
+          const positionEmployees = makeEmployees(filled, src.id, dept.id, src.title);
+          const actualMonthlyCost = positionEmployees.reduce((s, e) => s + e.monthlyRemuneration, 0);
+          const utilization = Math.max(55, Math.min(140, summary.utilization + (idx % 4) * 3 - 4));
           return {
-            id: `${dept.id}-POS-${String(idx + 1).padStart(3, "0")}`,
-            title,
+            id: src.id,
+            title: src.title,
             grade: src.grade ?? "G6",
             departmentId: dept.id,
-            reportsToPositionId: idx === 0 ? null : `${dept.id}-POS-001`,
-            headcountRequired: 0,
-            headcountActual: 0,
-            vacancyCount: 0,
-            plannedMonthlyCost: normalizeCurrency((src as any).plannedMonthlyCost ?? src.salaryMin ?? 25_000_000),
-            actualMonthlyCost: 0,
-            utilization: summary.utilization,
-            status: "Filled" as "Filled" | "Vacant" | "Partial" | "Overloaded",
-            employees: [] as ReturnType<typeof makeEmployees>,
+            reportsToPositionId: null as string | null,
+            headcountRequired: planned,
+            headcountActual: filled,
+            vacancyCount: Math.max(planned - filled, 0),
+            plannedMonthlyCost,
+            actualMonthlyCost,
+            utilization,
+            status: (filled <= 0 ? "Vacant" : filled < planned ? "Partial" : utilization > 110 ? "Overloaded" : "Filled") as
+              | "Filled"
+              | "Vacant"
+              | "Partial"
+              | "Overloaded",
+            employees: positionEmployees,
           };
         });
-
-        // distribute required HC and actual HC across generated positions
-        let remainingRequired = summary.positions;
-        let remainingActual = summary.employees;
-        generated.forEach((g, idx) => {
-          const remainingSlots = generated.length - idx;
-          const req = Math.max(1, Math.floor(remainingRequired / remainingSlots));
-          const act = Math.min(req, Math.max(0, Math.floor(remainingActual / remainingSlots)));
-          g.headcountRequired = req;
-          g.headcountActual = act;
-          g.vacancyCount = Math.max(req - act, 0);
-          g.utilization = Math.max(55, Math.min(140, summary.utilization + (idx % 4) * 3 - 4));
-          g.status = act <= 0 ? "Vacant" : act < req ? "Partial" : g.utilization > 110 ? "Overloaded" : "Filled";
-          g.employees = makeEmployees(act, g.id, dept.id, g.title);
-          g.actualMonthlyCost = g.employees.reduce((s, e) => s + e.monthlyRemuneration, 0);
-          remainingRequired -= req;
-          remainingActual -= act;
-        });
-
-        // adjust first node to exact totals
-        if (generated.length > 0) {
-          generated[0].headcountRequired += remainingRequired;
-          generated[0].headcountActual += remainingActual;
-          generated[0].vacancyCount = Math.max(generated[0].headcountRequired - generated[0].headcountActual, 0);
-          if (remainingActual > 0) {
-            generated[0].employees.push(...makeEmployees(remainingActual, generated[0].id, dept.id, generated[0].title));
-            generated[0].actualMonthlyCost = generated[0].employees.reduce((s, e) => s + e.monthlyRemuneration, 0);
+        if (generated.length > 1) {
+          const parentId = generated[0].id;
+          for (let i = 1; i < generated.length; i++) {
+            generated[i].reportsToPositionId = parentId;
           }
         }
 
