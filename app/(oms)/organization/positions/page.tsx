@@ -75,9 +75,11 @@ export default function PositionDirectoryPage() {
             <h1 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>Position Directory</h1>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="gap-1.5">
-              <Upload className="w-3.5 h-3.5" /> Bulk Upload
-            </Button>
+            <Link href="/organization/positions/create?mode=bulk-upload">
+              <Button variant="outline" size="sm" className="gap-1.5">
+                <Upload className="w-3.5 h-3.5" /> Bulk Upload
+              </Button>
+            </Link>
             <Link href="/organization/positions/create">
               <Button size="sm" className="gap-1.5" style={{ background: "var(--primary)", color: "white" }}>
                 <Plus className="w-3.5 h-3.5" /> Create Position

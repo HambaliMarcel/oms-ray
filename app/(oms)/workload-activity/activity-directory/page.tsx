@@ -6,19 +6,14 @@ import {
   AlertTriangle,
   ChevronDown,
   ChevronRight,
-  Copy,
   Download,
-  Edit,
-  FileSpreadsheet,
-  MoreVertical,
   Plus,
   RefreshCw,
   Search,
   Send,
-  Trash2,
+  SlidersHorizontal,
   TrendingDown,
   Upload,
-  UserPlus,
   Users,
 } from "lucide-react";
 import { TopBar } from "@/components/oms/topbar";
@@ -26,7 +21,6 @@ import { AiAssistant } from "@/components/oms/ai-assistant";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -42,13 +36,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
 import { ActivityForm } from "@/components/workload/activity-form";
 import {
@@ -67,31 +54,6 @@ const STAFFING_FILTERS = [
   "Underutilized",
 ] as const;
 
-function staffingBadge(status: WorkloadActivity["staffingStatus"]) {
-  const styles: Record<WorkloadActivity["staffingStatus"], string> = {
-    Overloaded: "bg-destructive/15 text-destructive border-destructive/30",
-    Understaffed: "bg-destructive/15 text-destructive border-destructive/30",
-    Balanced:
-      "bg-emerald-500/15 text-emerald-600 border-emerald-500/30 dark:text-emerald-400",
-    Underutilized:
-      "bg-amber-500/15 text-amber-600 border-amber-500/30 dark:text-amber-400",
-    "Significantly Underutilized":
-      "bg-blue-500/15 text-blue-600 border-blue-500/30 dark:text-blue-400",
-  };
-  return (
-    <Badge variant="outline" className={`text-[10px] ${styles[status]}`}>
-      {status === "Significantly Underutilized" ? "Sig. Under" : status}
-    </Badge>
-  );
-}
-
-function utilColor(util: number) {
-  if (util > 110) return "text-destructive";
-  if (util >= 90) return "text-emerald-600 dark:text-emerald-400";
-  if (util >= 70) return "text-amber-600 dark:text-amber-400";
-  return "text-blue-600 dark:text-blue-400";
-}
-
 export default function ActivityDirectoryPage() {
   const [search, setSearch] = useState("");
   const [orgFilter, setOrgFilter] = useState("all");
@@ -102,12 +64,6 @@ export default function ActivityDirectoryPage() {
   const [positionFilter, setPositionFilter] = useState("all");
   const [staffingFilter, setStaffingFilter] =
     useState<(typeof STAFFING_FILTERS)[number]>("All");
-
-  const [expanded, setExpanded] = useState<Record<string, boolean>>(() => {
-    const init: Record<string, boolean> = {};
-    processList.forEach((p) => (init[p.id] = true));
-    return init;
-  });
 
   // Router for full-page navigation
   const router = useRouter();
@@ -179,40 +135,13 @@ export default function ActivityDirectoryPage() {
       );
   }, [filtered]);
 
-  // KPI strip
-  const kpiStrip = useMemo(() => {
-    const total = filtered.length;
-    const synced = filtered.filter((a) => a.processId).length;
-    const totalDemand = filtered.reduce((s, a) => s + a.adjustedWorkload, 0);
-    const requiredHc = filtered.reduce((s, a) => s + a.requiredHc, 0);
-    const assignedHc = filtered.reduce((s, a) => s + a.assignedHc, 0);
-    const avgUtil =
-      total > 0
-        ? Math.round(filtered.reduce((s, a) => s + a.utilization, 0) / total)
-        : 0;
-    const understaffed = filtered.filter(
-      (a) => a.staffingStatus === "Understaffed",
-    ).length;
-    return {
-      total,
-      synced,
-      totalDemand: Math.round(totalDemand),
-      requiredHc: Math.round(requiredHc * 10) / 10,
-      assignedHc: Math.round(assignedHc * 10) / 10,
-      avgUtil,
-      understaffed,
-    };
-  }, [filtered]);
+  const [expandedProcesses, setExpandedProcesses] = useState<Record<string, boolean>>({});
 
   // Position list (unique responsible positions)
   const positions = useMemo(() => {
     const set = new Set(workloadActivities.map((a) => a.responsiblePosition));
     return Array.from(set).sort();
   }, []);
-
-  function toggleExpand(pid: string) {
-    setExpanded((p) => ({ ...p, [pid]: !p[pid] }));
-  }
 
   function clearFilters() {
     setSearch("");
@@ -308,44 +237,9 @@ export default function ActivityDirectoryPage() {
           </div>
         </div>
 
-        {/* KPI strip */}
-        <div className="mb-4 grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-7">
-          <KpiCell label="Total Activities" value={kpiStrip.total.toString()} />
-          <KpiCell
-            label="Synced from BPM"
-            value={kpiStrip.synced.toString()}
-            sub="from process portfolio"
-          />
-          <KpiCell
-            label="Workload Hours / Mo"
-            value={kpiStrip.totalDemand.toLocaleString()}
-            sub="adjusted demand"
-          />
-          <KpiCell
-            label="Required HC"
-            value={`${kpiStrip.requiredHc} FTE`}
-          />
-          <KpiCell
-            label="Assigned HC"
-            value={`${kpiStrip.assignedHc} FTE`}
-          />
-          <KpiCell
-            label="Avg Utilization"
-            value={`${kpiStrip.avgUtil}%`}
-            valueClass={utilColor(kpiStrip.avgUtil)}
-          />
-          <KpiCell
-            label="Understaffed"
-            value={kpiStrip.understaffed.toString()}
-            valueClass={
-              kpiStrip.understaffed > 0 ? "text-destructive" : undefined
-            }
-          />
-        </div>
-
         {/* Filter bar */}
-        <Card className="mb-4">
-          <CardContent className="grid gap-3 p-4 md:grid-cols-3 lg:grid-cols-7">
+        <Card className="mb-4 border-0 bg-transparent shadow-none">
+          <CardContent className="grid gap-3 p-0 md:grid-cols-3">
             <div className="relative md:col-span-2">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
@@ -355,6 +249,7 @@ export default function ActivityDirectoryPage() {
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
+            <div className="flex items-center justify-end gap-2">
             <Select value={orgFilter} onValueChange={setOrgFilter}>
               <SelectTrigger>
                 <SelectValue placeholder="Organization" />
@@ -365,386 +260,74 @@ export default function ActivityDirectoryPage() {
                 <SelectItem value="regional">Regional</SelectItem>
               </SelectContent>
             </Select>
-            <Select value={divisionFilter} onValueChange={setDivisionFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Division" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Divisions</SelectItem>
-                <SelectItem value="ops">Operations</SelectItem>
-                <SelectItem value="corp">Corporate</SelectItem>
-                <SelectItem value="rev">Revenue</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={deptFilter} onValueChange={setDeptFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Department" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Departments</SelectItem>
-                {departments.map((d) => (
-                  <SelectItem key={d.id} value={d.id}>
-                    {d.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={processFilter} onValueChange={setProcessFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Business Process" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Processes</SelectItem>
-                {processList.map((p) => (
-                  <SelectItem key={p.id} value={p.id}>
-                    {p.code}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={kpiFilter} onValueChange={setKpiFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Linked KPI" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All KPIs</SelectItem>
-                {kpiList.slice(0, 12).map((k) => (
-                  <SelectItem key={k.id} value={k.id}>
-                    {k.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={positionFilter} onValueChange={setPositionFilter}>
-              <SelectTrigger className="lg:col-span-2">
-                <SelectValue placeholder="Responsible Position" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Positions</SelectItem>
-                {positions.map((p) => (
-                  <SelectItem key={p} value={p}>
-                    {p}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <div className="flex flex-wrap gap-1.5 lg:col-span-5">
-              <span className="self-center text-xs font-medium text-muted-foreground">
-                Status:
-              </span>
-              {STAFFING_FILTERS.map((s) => (
-                <Button
-                  key={s}
-                  size="sm"
-                  variant={staffingFilter === s ? "default" : "outline"}
-                  onClick={() => setStaffingFilter(s)}
-                  className="h-7 text-xs"
-                >
-                  {s}
-                </Button>
-              ))}
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-7 text-xs"
-                onClick={clearFilters}
-              >
-                Clear
+              <Button variant="outline" size="icon" className="h-10 w-10 rounded-full">
+                <SlidersHorizontal className="h-4 w-4" />
               </Button>
             </div>
           </CardContent>
         </Card>
 
-        {/* Grouped sequential activity list */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm">
-              {filtered.length}{" "}
-              {filtered.length === 1 ? "activity" : "activities"} in{" "}
-              {grouped.length} {grouped.length === 1 ? "process" : "processes"}
-            </CardTitle>
-            <div className="flex gap-2">
-              <Button
-                size="sm"
-                variant="ghost"
-                className="text-xs"
-                onClick={() => {
-                  const next: Record<string, boolean> = {};
-                  processList.forEach((p) => (next[p.id] = true));
-                  setExpanded(next);
-                }}
-              >
-                Expand all
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="text-xs"
-                onClick={() => setExpanded({})}
-              >
-                Collapse all
-              </Button>
+        <div className="space-y-4">
+          {grouped.length === 0 ? (
+            <div className="flex flex-col items-center justify-center gap-2 rounded-2xl bg-white p-12 text-center shadow-[0_8px_24px_rgba(15,23,42,0.05)]">
+              <Activity className="h-8 w-8 text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">No activities match your filters.</p>
+              <Button size="sm" variant="outline" onClick={clearFilters}>Clear filters</Button>
             </div>
-          </CardHeader>
-          <CardContent className="p-0">
-            {grouped.length === 0 ? (
-              <div className="flex flex-col items-center justify-center gap-2 p-12 text-center">
-                <Activity className="h-8 w-8 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">
-                  No activities match your filters.
-                </p>
-                <Button size="sm" variant="outline" onClick={clearFilters}>
-                  Clear filters
-                </Button>
-              </div>
-            ) : (
-              <div className="divide-y">
-                {grouped.map(({ process, items }) => {
-                  const isOpen = expanded[process.id] ?? true;
-                  const groupDemand = items.reduce(
-                    (s, a) => s + a.adjustedWorkload,
-                    0,
-                  );
-                  const groupRequired = items.reduce(
-                    (s, a) => s + a.requiredHc,
-                    0,
-                  );
-                  const groupAssigned = items.reduce(
-                    (s, a) => s + a.assignedHc,
-                    0,
-                  );
-                  return (
-                    <div key={process.id}>
-                      <button
-                        type="button"
-                        className="flex w-full items-center justify-between gap-3 bg-muted/40 px-4 py-3 text-left hover:bg-muted/60"
-                        onClick={() => toggleExpand(process.id)}
-                      >
-                        <div className="flex items-center gap-3">
-                          {isOpen ? (
-                            <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                          ) : (
-                            <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                          )}
-                          <div>
-                            <p className="text-sm font-semibold">
-                              <span className="mr-2 font-mono text-xs text-muted-foreground">
-                                {process.code}
-                              </span>
-                              {process.name}
-                            </p>
-                            <p className="text-[11px] text-muted-foreground">
-                              {process.dept} · Owner {process.owner} ·{" "}
-                              {process.frequency}
-                            </p>
-                          </div>
-                          <Badge variant="secondary">
-                            {items.length} steps
-                          </Badge>
-                          {process.bottleneck && (
-                            <Badge className="bg-destructive/15 text-destructive border-destructive/30">
-                              Bottleneck
-                            </Badge>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                          <span>
-                            <span className="font-medium text-foreground">
-                              {Math.round(groupDemand)}
-                            </span>{" "}
-                            h/mo
-                          </span>
-                          <span>
-                            Req{" "}
-                            <span className="font-medium text-foreground">
-                              {groupRequired.toFixed(1)}
-                            </span>{" "}
-                            · Asg{" "}
-                            <span className="font-medium text-foreground">
-                              {groupAssigned.toFixed(0)}
-                            </span>
-                          </span>
-                        </div>
-                      </button>
-
-                      {isOpen && (
-                        <div className="overflow-x-auto">
-                          <table className="w-full text-sm">
-                            <thead className="bg-muted/20 text-[11px] uppercase text-muted-foreground">
-                              <tr>
-                                <th className="w-10 px-3 py-2 text-left font-medium">
-                                  Step
-                                </th>
-                                <th className="px-3 py-2 text-left font-medium">
-                                  Activity
-                                </th>
-                                <th className="px-3 py-2 text-left font-medium">
-                                  Department
-                                </th>
-                                <th className="px-3 py-2 text-left font-medium">
-                                  Position
-                                </th>
-                                <th className="px-3 py-2 text-right font-medium">
-                                  People
-                                </th>
-                                <th className="px-3 py-2 text-right font-medium">
-                                  Freq
-                                </th>
-                                <th className="px-3 py-2 text-right font-medium">
-                                  Avg dur
-                                </th>
-                                <th className="px-3 py-2 text-right font-medium">
-                                  Demand
-                                </th>
-                                <th className="px-3 py-2 text-right font-medium">
-                                  Req HC
-                                </th>
-                                <th className="px-3 py-2 text-right font-medium">
-                                  Asg HC
-                                </th>
-                                <th className="px-3 py-2 text-right font-medium">
-                                  Util
-                                </th>
-                                <th className="px-3 py-2 text-left font-medium">
-                                  Status
-                                </th>
-                                <th className="w-10 px-3 py-2"></th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {items.map((a) => (
-                                <tr
-                                  key={a.id}
-                                  className="cursor-pointer border-t hover:bg-muted/30"
-                                  onClick={() => goToActivity(a.id)}
-                                >
-                                  <td className="px-3 py-2 text-center">
-                                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-muted text-[11px] font-semibold tabular-nums">
-                                      {a.seq}
-                                    </span>
-                                  </td>
-                                  <td className="px-3 py-2">
-                                    <p className="font-medium">{a.name}</p>
-                                    <p className="font-mono text-[11px] text-muted-foreground">
-                                      {a.activityCode}
-                                    </p>
-                                  </td>
-                                  <td className="px-3 py-2 text-xs text-muted-foreground">
-                                    {a.department}
-                                  </td>
-                                  <td className="px-3 py-2 text-xs text-muted-foreground">
-                                    {a.responsiblePosition}
-                                  </td>
-                                  <td className="px-3 py-2 text-right tabular-nums">
-                                    {a.assignedHc}
-                                  </td>
-                                  <td className="px-3 py-2 text-right text-xs text-muted-foreground">
-                                    {a.frequencyType}
-                                  </td>
-                                  <td className="px-3 py-2 text-right tabular-nums">
-                                    {a.duration}h
-                                  </td>
-                                  <td className="px-3 py-2 text-right tabular-nums">
-                                    {Math.round(a.adjustedWorkload)}h
-                                  </td>
-                                  <td className="px-3 py-2 text-right tabular-nums">
-                                    {a.requiredHc.toFixed(1)}
-                                  </td>
-                                  <td className="px-3 py-2 text-right tabular-nums">
-                                    {a.assignedHc.toFixed(0)}
-                                  </td>
-                                  <td
-                                    className={`px-3 py-2 text-right font-semibold tabular-nums ${utilColor(a.utilization)}`}
-                                  >
-                                    {a.utilization}%
-                                  </td>
-                                  <td className="px-3 py-2">
-                                    {staffingBadge(a.staffingStatus)}
-                                  </td>
-                                  <td
-                                    className="px-3 py-2"
-                                    onClick={(ev) => ev.stopPropagation()}
-                                  >
-                                    <DropdownMenu>
-                                      <DropdownMenuTrigger asChild>
-                                        <Button
-                                          size="icon"
-                                          variant="ghost"
-                                          className="h-7 w-7"
-                                        >
-                                          <MoreVertical className="h-4 w-4" />
-                                        </Button>
-                                      </DropdownMenuTrigger>
-                                      <DropdownMenuContent align="end">
-                                        <DropdownMenuItem
-                                          onSelect={() => goToActivity(a.id)}
-                                        >
-                                          <Activity className="mr-2 h-4 w-4" />
-                                          View Detail
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem
-                                          onSelect={() => setEditTarget(a)}
-                                        >
-                                          <Edit className="mr-2 h-4 w-4" />
-                                          Edit Activity
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem
-                                          onSelect={() => goToActivity(a.id)}
-                                        >
-                                          <UserPlus className="mr-2 h-4 w-4" />
-                                          Assign Employees
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem
-                                          onSelect={() => setRecalcTarget(a)}
-                                        >
-                                          <RefreshCw className="mr-2 h-4 w-4" />
-                                          Recalculate Workload
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem
-                                          onSelect={() => setSendHcTarget(a)}
-                                        >
-                                          <Send className="mr-2 h-4 w-4" />
-                                          Send Required HC
-                                        </DropdownMenuItem>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuItem asChild>
-                                          <a
-                                            href={`/process/portfolio?process=${a.processId}`}
-                                          >
-                                            <FileSpreadsheet className="mr-2 h-4 w-4" />
-                                            View Source Process
-                                          </a>
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem
-                                          onSelect={() => setDuplicateTarget(a)}
-                                        >
-                                          <Copy className="mr-2 h-4 w-4" />
-                                          Duplicate
-                                        </DropdownMenuItem>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuItem
-                                          onSelect={() => setDeleteTarget(a)}
-                                          className="text-destructive focus:text-destructive"
-                                        >
-                                          <Trash2 className="mr-2 h-4 w-4" />
-                                          Delete
-                                        </DropdownMenuItem>
-                                      </DropdownMenuContent>
-                                    </DropdownMenu>
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      )}
+          ) : (
+            grouped.map(({ process, items }) => {
+              const isOpen = expandedProcesses[process.id] ?? true;
+              return (
+                <section key={process.id} className="rounded-2xl bg-[#EDF2F7] p-4 shadow-[0_8px_24px_rgba(15,23,42,0.05)]">
+                  <button
+                    type="button"
+                    onClick={() => setExpandedProcesses((p) => ({ ...p, [process.id]: !isOpen }))}
+                    className="flex w-full items-center justify-between rounded-2xl bg-[#DDE4EC] px-4 py-3 text-left"
+                  >
+                    <div className="min-w-0">
+                      <p className="text-[22px] font-semibold text-[#1F2937]">{process.name}</p>
+                      <p className="text-xs text-[#64748B]">{process.code} · {items.length} Activities</p>
                     </div>
-                  );
-                })}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                    {isOpen ? <ChevronDown className="h-5 w-5 text-[#64748B]" /> : <ChevronRight className="h-5 w-5 text-[#64748B]" />}
+                  </button>
+                  {isOpen && (
+                    <div className="mt-4 space-y-3">
+                      {items.map((a) => (
+                        <button
+                          key={a.id}
+                          type="button"
+                          onClick={() => goToActivity(a.id)}
+                          className="flex w-full items-start justify-between rounded-2xl bg-white px-5 py-4 text-left shadow-[0_6px_16px_rgba(15,23,42,0.04)]"
+                        >
+                          <div className="min-w-0">
+                            <p className="text-[26px] leading-none text-[#FACC15]">•</p>
+                            <p className="-mt-1 text-[22px] font-semibold text-[#1F2937]">{a.name}</p>
+                            <p className="text-sm text-[#64748B]">Role: {a.responsiblePosition}</p>
+                            <p className="mt-1 text-sm font-medium text-[#2563EB]">Open activity detail {"->"}</p>
+                          </div>
+                          <div className="ml-4 grid grid-cols-3 gap-6 text-right">
+                            <div>
+                              <p className="text-[10px] font-semibold uppercase tracking-wide text-[#94A3B8]">Frequency</p>
+                              <p className="text-sm font-semibold text-[#1F2937]">{a.frequencyValue}/mo</p>
+                            </div>
+                            <div>
+                              <p className="text-[10px] font-semibold uppercase tracking-wide text-[#94A3B8]">Duration</p>
+                              <p className="text-sm font-semibold text-[#1F2937]">{a.duration}h</p>
+                            </div>
+                            <div>
+                              <p className="text-[10px] font-semibold uppercase tracking-wide text-[#94A3B8]">Workload</p>
+                              <p className="text-sm font-semibold text-[#1D4ED8]">{Math.round(a.adjustedWorkload)}h/mo</p>
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </section>
+              );
+            })
+          )}
+        </div>
       </main>
 
       {/* CREATE — full-page form modal */}
@@ -986,32 +569,6 @@ export default function ActivityDirectoryPage() {
 
       <AiAssistant />
     </div>
-  );
-}
-
-function KpiCell({
-  label,
-  value,
-  sub,
-  valueClass = "",
-}: {
-  label: string;
-  value: string;
-  sub?: string;
-  valueClass?: string;
-}) {
-  return (
-    <Card>
-      <CardContent className="flex flex-col gap-0.5 p-3">
-        <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-          {label}
-        </p>
-        <p className={`text-xl font-bold tabular-nums ${valueClass}`}>
-          {value}
-        </p>
-        {sub && <p className="text-[10px] text-muted-foreground">{sub}</p>}
-      </CardContent>
-    </Card>
   );
 }
 

@@ -53,6 +53,25 @@ export const departments = [
   { id: "D12", name: "Strategy & Transformation", code: "STRAT", hc: 8, headPlan: 10, gap: 2, budget: 1500000, utilized: 1350000, head: "Siti Aminah", location: "Jakarta", status: "Active", color: "#C8B8FF", vacancies: 2, spanOfControl: 3.5, avgTenure: 4.2, kpi: 88, cost: 540000 },
 ];
 
+const bumnDepartmentDisplayById: Record<string, string> = {
+  D01: "Direksi & Corporate Office",
+  D02: "Divisi Finance & Governance",
+  D03: "Divisi Human Capital Management",
+  D04: "Divisi Operasi Terminal",
+  D05: "Divisi Digital Transformation",
+  D06: "Divisi IT Infrastructure",
+  D07: "Divisi Komersial & Customer Solutions",
+  D08: "Divisi Procurement",
+  D09: "Divisi Legal & Compliance",
+  D10: "Divisi Pelayanan Kapal",
+  D11: "Divisi Port Services",
+  D12: "Divisi Strategy & Corporate Planning",
+};
+
+for (const d of departments as Array<Record<string, any>>) {
+  d.name = bumnDepartmentDisplayById[d.id] ?? d.name;
+}
+
 // ---------------------------------------------------------------------
 // POSITIONS
 // ---------------------------------------------------------------------
@@ -517,6 +536,33 @@ export const processList = [
   { id: "BP022", name: "Inventory Management",     code: "INV-001",     dept: "Operations",      deptId: "D04", ownerPosition: "Operations Analyst",    ownerId: "E014", owner: "Wahyu Pradana",    category: "Operations", sla: 1,   actualTime: 1.2,   status: "On Track", frequency: "Daily",      bottleneck: false, slaMet: true,  efficiency: 91, kpiScore: 84, previousProcess: null,    nextProcess: "BP004", inputSource: "Stock Levels",              outputDeliverable: "Inventory Report",     description: "Stock counting, reorder triggering, adjustments, audits, and reporting.", lastUpdated: "2026-04-24", version: "v2.0" },
 ];
 
+const bumnDeptNameMap: Record<string, string> = {
+  "Executive Office": "Direksi & Corporate Office",
+  "Finance": "Divisi Finance & Governance",
+  "Human Resources": "Divisi Human Capital Management",
+  "Operations": "Divisi Operasi Terminal",
+  "Engineering": "Divisi Digital Transformation",
+  "IT & Digital": "Divisi IT Infrastructure",
+  "Sales & Marketing": "Divisi Komersial & Customer Solutions",
+  "Procurement": "Divisi Procurement",
+  "Legal & Compliance": "Divisi Legal & Compliance",
+  "Supply Chain": "Divisi Pelayanan Kapal",
+  "Customer Service": "Divisi Port Services",
+  "Strategy & Transformation": "Divisi Strategy & Corporate Planning",
+  "Marketing": "Divisi Komersial & Customer Solutions",
+  "Technology": "Divisi IT Infrastructure",
+  "Strategy": "Divisi Strategy & Corporate Planning",
+  "Legal": "Divisi Legal & Compliance",
+};
+
+for (const p of processList as Array<Record<string, any>>) {
+  p.dept = bumnDeptNameMap[p.dept] ?? p.dept;
+  p.ownerPositionId =
+    positions.find((pos) => pos.title === p.ownerPosition)?.id ??
+    positions.find((pos) => pos.title === p.owner)?.id ??
+    null;
+}
+
 // ---------------------------------------------------------------------
 // ACTIVITY TEMPLATES — 5 activities per process (110 total)
 // Each entry: [name, durationHours, [employeeIds...]]
@@ -805,6 +851,31 @@ export const processKPIMaps = [
   { processId: "BP021", kpiId: "K004", processName: "Sales Operations",     kpiName: "Win Rate",              impact: "High",     weightage: 14, target: 30,  actual: 25,  trend: "Down"   },
 ];
 
+const _kpiByCategory: Record<string, { id: string; name: string }> = {
+  Strategic: { id: "K001", name: "Strategy Score" },
+  Financial: { id: "K002", name: "Budget Utilization" },
+  Operations: { id: "K004", name: "Operational Efficiency" },
+  Talent: { id: "K008", name: "Retention Rate" },
+  Governance: { id: "K005", name: "Audit Compliance" },
+};
+
+for (const p of processList as Array<Record<string, any>>) {
+  if (processKPIMaps.some((m) => m.processId === p.id)) continue;
+  const mapped = _kpiByCategory[p.category] ?? { id: "K004", name: "Operational Efficiency" };
+  const target = mapped.id === "K002" ? 95 : mapped.id === "K005" ? 100 : 90;
+  processKPIMaps.push({
+    processId: p.id,
+    kpiId: mapped.id,
+    processName: p.name,
+    kpiName: mapped.name,
+    impact: p.bottleneck ? "High" : "Medium",
+    weightage: 10,
+    target,
+    actual: Math.max(60, Math.min(99, p.kpiScore)),
+    trend: p.kpiScore < target - 3 ? "Down" : p.kpiScore > target ? "Up" : "Stable",
+  });
+}
+
 // ---------------------------------------------------------------------
 // PROCESS VERSIONS — change history
 // ---------------------------------------------------------------------
@@ -941,13 +1012,6 @@ export const processActivities: Record<string, { seq: number; name: string; dura
 // =====================================================================
 export const navModules = [
   {
-    id: "dashboard",
-    label: "Dashboard",
-    icon: "LayoutDashboard",
-    path: "/",
-    submodules: undefined as undefined | { label: string; path: string }[],
-  },
-  {
     id: "org",
     label: "Organization Management",
     icon: "Building2",
@@ -972,9 +1036,8 @@ export const navModules = [
     icon: "Clock",
     submodules: [
       { label: "Activity Directory",    path: "/workload-activity/activity-directory" },
-      { label: "Workload Engine",       path: "/workload-activity/workload-engine" },
       { label: "Utilization Dashboard", path: "/workload-activity/utilization-dashboard" },
-      { label: "Assignment Management", path: "/workload-activity/assignment-management" },
+      { label: "Alignment Management",  path: "/workload-activity/assignment-management" },
     ],
   },
   {
@@ -1022,7 +1085,7 @@ const _lastNames = [
   "Wibowo","Anggraini","Putri","Halim","Setiawan","Maharani","Pradana","Aminah",
   "Kurniawan","Mulyani","Saputra","Handayani","Lestari","Hakim","Indah","Dewi",
 ];
-const _deptIds = ["D01","D02","D03","D04","D05","D06","D07","D08"];
+const _deptIds = ["D01","D02","D03","D04","D05","D06","D07","D08","D09","D10","D11","D12"];
 const _gradeMap: Record<string, { grade: string; level: string; salary: number }> = {
   Junior:  { grade: "G3", level: "Junior",  salary: 70000  },
   Mid:     { grade: "G5", level: "Mid",     salary: 95000  },
@@ -1040,11 +1103,24 @@ const _positions: Record<string, string[]> = {
   D06: ["Legal Counsel","Compliance Officer","Contract Specialist"],
   D07: ["Procurement Officer","Sourcing Specialist","Vendor Manager"],
   D08: ["Strategy Analyst","Business Analyst","Project Manager"],
+  D09: ["Compliance Analyst","Legal Officer","Risk Analyst"],
+  D10: ["Fleet Planner","Vessel Operations Analyst","Marine Coordinator"],
+  D11: ["Service Desk Officer","Customer Relations Officer","Terminal Service Analyst"],
+  D12: ["Corporate Planning Analyst","PMO Analyst","Transformation Officer"],
 };
 const _deptNameMap: Record<string, string> = {
-  D01: "Technology", D02: "Human Resources", D03: "Finance",
-  D04: "Operations", D05: "Marketing", D06: "Legal",
-  D07: "Procurement", D08: "Strategy",
+  D01: "Direksi & Corporate Office",
+  D02: "Divisi Finance & Governance",
+  D03: "Divisi Human Capital Management",
+  D04: "Divisi Operasi Terminal",
+  D05: "Divisi Digital Transformation",
+  D06: "Divisi IT Infrastructure",
+  D07: "Divisi Komersial & Customer Solutions",
+  D08: "Divisi Procurement",
+  D09: "Divisi Legal & Compliance",
+  D10: "Divisi Pelayanan Kapal",
+  D11: "Divisi Port Services",
+  D12: "Divisi Strategy & Corporate Planning",
 };
 const _locations = ["Jakarta","Bandung","Surabaya","Medan","Yogyakarta"];
 const _statusOptions = ["Active","Active","Active","Active","Active","On Leave"];
@@ -1099,6 +1175,54 @@ const _extendedEmployees = Array.from({ length: 200 }, (_, i) => {
 // employeesAll exposes the full 224-person roster; the named E001–E024 stay
 // available via the original `employees` export for legacy pages.
 export const employeesAll = [..._rawEmployees, ..._extendedEmployees];
+
+// ---------------------------------------------------------------------
+// FLOW NORMALIZATION: Org -> Process+KPI -> Activities -> Workload
+// Keeps data believable and connected for BUMN-style operating model.
+// ---------------------------------------------------------------------
+for (const process of processList as Array<Record<string, any>>) {
+  const processKpi = processKPIMaps.find((m) => m.processId === process.id);
+  const processActivitiesRows = activityList.filter((a) => a.processId === process.id);
+  const ownerCandidate =
+    employeesAll.find((e) => e.position === process.ownerPosition) ??
+    employeesAll.find((e) => e.position === process.owner) ??
+    employeesAll.find((e) => e.id === process.ownerId);
+  const deptEmployees = employeesAll.filter((e) => e.deptId === process.deptId && e.status === "Active");
+  const fallbackPool = deptEmployees.length > 0 ? deptEmployees : employeesAll.filter((e) => e.status === "Active");
+  process.ownerId = ownerCandidate?.id ?? process.ownerId;
+  process.owner = ownerCandidate?.name ?? process.owner;
+  if (processKpi) {
+    process.kpiScore = Math.max(60, Math.min(98, Math.round(Number(processKpi.actual))));
+  }
+
+  processActivitiesRows.forEach((activity, idx) => {
+    const requiredHc = Math.max(activity.requiredHc ?? 1, 1);
+    const selected: string[] = [];
+    if (ownerCandidate?.id) selected.push(ownerCandidate.id);
+    for (const candidate of fallbackPool) {
+      if (selected.length >= requiredHc) break;
+      if (!selected.includes(candidate.id)) selected.push(candidate.id);
+    }
+    const finalAssignees = selected.length ? selected : [fallbackPool[0]?.id ?? "E001"];
+    activity.assignedEmployees = finalAssignees;
+    activity.assignedEmployeeNames = finalAssignees
+      .map((id) => employeesAll.find((e) => e.id === id)?.name)
+      .filter(Boolean) as string[];
+    activity.requiredHc = Math.max(activity.requiredHc ?? finalAssignees.length, finalAssignees.length);
+    activity.role = process.ownerPosition;
+    activity.position = process.ownerPosition;
+    const monthlyFrequency =
+      activity.frequency === "Daily" ? 22 :
+      activity.frequency === "Weekly" ? 4 :
+      activity.frequency === "Monthly" ? 1 :
+      activity.frequency === "Quarterly" ? 0.33 : 1;
+    activity.workloadHours = Math.round(activity.duration * monthlyFrequency * 100) / 100;
+    const utilBase = process.bottleneck ? 98 : 82;
+    activity.utilization = Math.max(55, Math.min(130, utilBase + (idx % 4) * 6 - 6));
+    activity.status = process.bottleneck && idx === Math.floor(processActivitiesRows.length / 2) ? "Bottleneck" : "Active";
+    activity.staffingStatus = activity.requiredHc > finalAssignees.length ? "Understaffed" : "Balanced";
+  });
+}
 
 // =====================================================================
 // WORKLOAD MODULE — calculation engine constants & derived datasets
@@ -1283,20 +1407,28 @@ export const workloadActivities: WorkloadActivity[] = activityList.map((a) => {
   const effectiveCapacityPerFte = monthlyCapacity * productivityFactor;
 
   const baseWorkload = a.duration * execPerMonth;
-  const adjustedWorkload =
+  const adjustedWorkloadRaw =
     baseWorkload *
     COMPLEXITY_MULTIPLIERS[attrs.complexityLevel] *
     attrs.qualityReviewFactor *
     attrs.seasonalPeakFactor *
     (1 + attrs.reworkRate);
+  // Normalize to realistic monthly workload band so activity-level values remain believable.
+  const adjustedWorkload = Math.max(8, Math.min(220, adjustedWorkloadRaw));
 
   const requiredHcRaw = adjustedWorkload / effectiveCapacityPerFte;
-  const requiredHc = Math.round(requiredHcRaw * 100) / 100;
-  const assignedHc = a.assignedEmployees.length;
+  const requiredHc = Math.max(0.3, Math.round(requiredHcRaw * 100) / 100);
+  const baselineAssignmentFactor =
+    attrs.criticality === "Critical" ? 0.88 :
+    attrs.criticality === "High" ? 0.95 :
+    attrs.criticality === "Medium" ? 1.0 : 1.08;
+  const seqAdjustment = ((a.seq % 5) - 2) * 0.03; // deterministic -0.06 .. +0.06
+  const assignedHc = Math.max(0.3, Math.round(requiredHc * (baselineAssignmentFactor + seqAdjustment) * 10) / 10);
   const totalAssignedEffectiveCap = assignedHc * effectiveCapacityPerFte;
-  const utilization = totalAssignedEffectiveCap > 0
+  const utilizationRaw = totalAssignedEffectiveCap > 0
     ? Math.round((adjustedWorkload / totalAssignedEffectiveCap) * 100)
     : 0;
+  const utilization = Math.max(55, Math.min(135, utilizationRaw));
 
   // 6-month trend (deterministic, derived from utilization)
   const trend = [-5, -2, 0, 3, 5, 0].map((delta, i) =>

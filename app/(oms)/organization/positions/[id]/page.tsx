@@ -77,21 +77,6 @@ export default function PositionDetailPage({ params }: { params: Promise<{ id: s
     [incumbents, relatedActivities],
   );
 
-  const kpiTop = [
-    { label: "Headcount", value: `${position.filled} / ${position.planned} Filled`, color: "text-emerald-600" },
-    { label: "Utilization", value: `${avgUtil}% (${statusByUtil(avgUtil)})`, color: utilColor(avgUtil) },
-    { label: "Total Workload", value: `${totalWorkloadHours} hours/month`, color: "text-blue-600" },
-    { label: "Monthly Cost", value: formatRupiah(actualMonthlyCost || plannedMonthlyCost), color: costStatus === "Above Plan" ? "text-red-600" : costStatus === "Within Plan" ? "text-emerald-600" : "text-amber-600" },
-  ];
-
-  const costDonut = [
-    { name: "Base", value: plannedBaseSalary },
-    { name: "Allowance", value: plannedAllowance },
-    { name: "Benefits", value: plannedBenefits },
-    { name: "Bonus", value: plannedBonus },
-  ];
-  const plannedVsActual = [{ name: "Monthly", Planned: plannedMonthlyCost, Actual: actualMonthlyCost || plannedMonthlyCost }];
-
   return (
     <div className="space-y-6 bg-[#F8FAFC] p-1">
       <div className="rounded-2xl bg-white p-6 shadow-sm">
@@ -110,15 +95,6 @@ export default function PositionDetailPage({ params }: { params: Promise<{ id: s
             <Link href="/scenario/builder"><Button size="sm"><GitBranch className="mr-1.5 h-3.5 w-3.5" />Simulate in Scenario</Button></Link>
           </div>
         </div>
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-        {kpiTop.map((k) => (
-          <div key={k.label} className="rounded-2xl bg-white p-5 shadow-sm">
-            <p className="text-xs text-muted-foreground">{k.label}</p>
-            <p className={`mt-1 text-2xl font-bold ${k.color}`}>{k.value}</p>
-          </div>
-        ))}
       </div>
 
       <div className="grid grid-cols-12 gap-5">
@@ -193,14 +169,6 @@ export default function PositionDetailPage({ params }: { params: Promise<{ id: s
               ["Actual Annual Cost", formatRupiah(actualAnnualCost || plannedAnnualCost)],
               ["Cost vs Plan", `${formatRupiah(costGap)} (${costStatus})`],
             ]} />
-            <div className="mt-4 grid grid-cols-1 gap-3">
-              <ChartCard title="Salary vs Benefits">
-                <ResponsiveContainer width="100%" height={150}><PieChart><Pie data={costDonut} dataKey="value" cx="50%" cy="50%" innerRadius={32} outerRadius={56}>{costDonut.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}</Pie><Tooltip formatter={(v: number) => formatRupiah(v)} /></PieChart></ResponsiveContainer>
-              </ChartCard>
-              <ChartCard title="Planned vs Actual">
-                <ResponsiveContainer width="100%" height={140}><BarChart data={plannedVsActual}><XAxis dataKey="name" /><YAxis hide /><Tooltip formatter={(v: number) => formatRupiah(v)} /><Bar dataKey="Planned" fill="#94A3B8" /><Bar dataKey="Actual" fill="#2563EB" /></BarChart></ResponsiveContainer>
-              </ChartCard>
-            </div>
           </Section>
 
           <Section title="Business Process & KPI">
@@ -278,8 +246,8 @@ function EmployeeTable({ incumbents }: { incumbents: typeof employees }) {
               <td className="px-3">
                 <div className="flex gap-1">
                   <Link href={`/organization/employees/${e.id}`}><Button size="sm" variant="outline">View</Button></Link>
-                  <Button size="sm" variant="outline">Remove</Button>
-                  <Button size="sm" variant="outline">Reassign</Button>
+                  <Link href={`/workload-activity/assignment-management?employeeId=${e.id}&action=remove`}><Button size="sm" variant="outline">Remove</Button></Link>
+                  <Link href={`/workload-activity/assignment-management?employeeId=${e.id}&action=reassign`}><Button size="sm" variant="outline">Reassign</Button></Link>
                 </div>
               </td>
             </tr>

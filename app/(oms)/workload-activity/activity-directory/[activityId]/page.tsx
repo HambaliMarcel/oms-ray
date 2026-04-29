@@ -27,8 +27,8 @@ function utilizationStatus(utilization: number) {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-2xl bg-white p-6 shadow-[0_8px_24px_rgba(15,23,42,0.05)]">
-      <h2 className="text-[18px] font-semibold text-[#0F172A]">{title}</h2>
+    <section className="rounded-2xl border border-[#EAF0F7] bg-white p-6 shadow-[0_8px_24px_rgba(15,23,42,0.05)]">
+      <h2 className="text-[18px] font-semibold tracking-[-0.01em] text-[#0F172A]">{title}</h2>
       <div className="mt-4">{children}</div>
     </section>
   );
@@ -58,6 +58,8 @@ export default function ActivityDetailPage({ params }: { params: Promise<{ activ
   const [scenarioOpen, setScenarioOpen] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [formulaOpen, setFormulaOpen] = useState(false);
+  const [breakdownOpen, setBreakdownOpen] = useState(false);
 
   const [assignedEmployees, setAssignedEmployees] = useState<string[]>(activity?.assignedEmployees ?? []);
   const [allocationPercent, setAllocationPercent] = useState<Record<string, number>>(
@@ -153,11 +155,14 @@ export default function ActivityDetailPage({ params }: { params: Promise<{ activ
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
-      <main className="space-y-4 p-6">
-        <section className="rounded-2xl bg-white px-5 py-4 shadow-[0_8px_24px_rgba(15,23,42,0.05)]">
+      <main className="space-y-6 p-6">
+        <section className="rounded-2xl border border-[#E3ECFA] bg-gradient-to-b from-white to-[#F7FAFF] px-5 py-4 shadow-[0_10px_28px_rgba(15,23,42,0.06)]">
           <p className="text-[11px] text-[#64748B]">Workload &amp; Activity Management &gt; Activity Directory &gt; {edit.activityName}</p>
           <div className="mt-1 flex flex-wrap items-start justify-between gap-3">
-            <h1 className="text-[24px] font-bold text-[#0F172A]">Activity Detail — {edit.activityName}</h1>
+            <div>
+              <h1 className="text-[26px] font-bold tracking-[-0.02em] text-[#0F172A]">Activity Detail — {edit.activityName}</h1>
+              <p className="mt-1 text-xs text-[#64748B]">Operational workload, staffing, process linkages, and cost impact in one page.</p>
+            </div>
             <div className="flex flex-wrap gap-2">
               <Button size="sm" variant="outline" className="rounded-xl h-8" onClick={() => setEditOpen(true)}>Edit Activity</Button>
               <Button size="sm" variant="outline" className="rounded-xl h-8" onClick={() => setAssignOpen(true)}>Assign Employees</Button>
@@ -166,21 +171,6 @@ export default function ActivityDetailPage({ params }: { params: Promise<{ activ
               <Button size="sm" className="rounded-xl h-8 bg-[#2563EB] text-white" onClick={() => setExportOpen(true)}>Export Activity Detail</Button>
             </div>
           </div>
-        </section>
-
-        <section className="grid grid-cols-2 gap-4 lg:grid-cols-5">
-          {[
-            ["Monthly Workload", `${adjustedWorkloadHours.toFixed(1)} hours/month`],
-            ["Required HC", `${requiredHc.toFixed(2)} FTE`],
-            ["Assigned HC", `${assignedHc.toFixed(2)} FTE`],
-            ["Utilization", `${utilization.toFixed(0)}% — ${status.label}`],
-            ["Monthly Activity Cost", formatRupiah(Math.round(totalMonthlyActivityCost))],
-          ].map(([label, value]) => (
-            <article key={label} className="rounded-2xl bg-white p-5 shadow-[0_8px_24px_rgba(15,23,42,0.05)]">
-              <p className="text-xs text-[#94A3B8]">{label}</p>
-              <p className={`mt-1 text-xl font-bold ${label === "Utilization" ? statusColor : "text-[#0F172A]"}`}>{value}</p>
-            </article>
-          ))}
         </section>
 
         <Section title="Activity Profile">
@@ -223,30 +213,30 @@ export default function ActivityDetailPage({ params }: { params: Promise<{ activ
         </Section>
 
         <Section title="People Assigned to This Activity">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto rounded-xl border border-[#EDF2F7]">
             <table className="w-full text-sm">
-              <thead className="bg-[#F8FAFC] text-xs text-[#94A3B8]">
+              <thead className="bg-[#F8FAFC] text-xs font-medium text-[#94A3B8]">
                 <tr>
-                  <th className="p-2 text-left">Employee</th><th className="p-2 text-left">Employee ID</th><th className="p-2 text-left">Position</th><th className="p-2 text-left">Department</th><th className="p-2 text-right">Allocation %</th><th className="p-2 text-right">Capacity Contribution</th><th className="p-2 text-right">Workload from This Activity</th><th className="p-2 text-right">Other Workload</th><th className="p-2 text-right">Total Workload</th><th className="p-2 text-right">Utilization</th><th className="p-2 text-left">Status</th><th className="p-2 text-right">Monthly Cost Contribution</th>
+                  <th className="px-3 py-3 text-left">Employee</th><th className="px-3 py-3 text-left">Employee ID</th><th className="px-3 py-3 text-left">Position</th><th className="px-3 py-3 text-left">Department</th><th className="px-3 py-3 text-right">Allocation %</th><th className="px-3 py-3 text-right">Capacity Contribution</th><th className="px-3 py-3 text-right">Workload from This Activity</th><th className="px-3 py-3 text-right">Other Workload</th><th className="px-3 py-3 text-right">Total Workload</th><th className="px-3 py-3 text-right">Utilization</th><th className="px-3 py-3 text-left">Status</th><th className="px-3 py-3 text-right">Monthly Cost Contribution</th>
                 </tr>
               </thead>
               <tbody>
                 {assignedRows.map((row) => {
                   const empStatus = utilizationStatus(row.empUtil);
                   return (
-                    <tr key={row.employee.id} className="border-t border-[#F1F5F9]">
-                      <td className="p-2"><Link className="font-medium hover:underline" href={`/organization/employees/${row.employee.id}`}>{row.employee.name}</Link></td>
-                      <td className="p-2">{row.employee.id}</td>
-                      <td className="p-2"><Link className="hover:underline" href={`/organization/positions/${positions.find((p) => p.title === row.employee.position)?.id ?? ""}`}>{row.employee.position}</Link></td>
-                      <td className="p-2">{row.employee.dept}</td>
-                      <td className="p-2 text-right">{row.alloc}%</td>
-                      <td className="p-2 text-right">{row.capContribution.toFixed(1)}h</td>
-                      <td className="p-2 text-right">{row.thisActivityWorkload.toFixed(1)}h</td>
-                      <td className="p-2 text-right">{row.otherWorkload.toFixed(1)}h</td>
-                      <td className="p-2 text-right">{row.totalWorkload.toFixed(1)}h</td>
-                      <td className="p-2 text-right">{row.empUtil.toFixed(0)}%</td>
-                      <td className="p-2"><span className={`rounded-full px-2 py-1 text-xs ${empStatus.badge}`}>{empStatus.label}</span></td>
-                      <td className="p-2 text-right">{formatRupiah(Math.round(row.monthlyCostContribution))}</td>
+                    <tr key={row.employee.id} className="border-t border-[#F1F5F9] hover:bg-[#F8FAFC]">
+                      <td className="px-3 py-3"><Link className="font-medium hover:underline" href={`/organization/employees/${row.employee.id}`}>{row.employee.name}</Link></td>
+                      <td className="px-3 py-3">{row.employee.id}</td>
+                      <td className="px-3 py-3"><Link className="hover:underline" href={`/organization/positions/${positions.find((p) => p.title === row.employee.position)?.id ?? ""}`}>{row.employee.position}</Link></td>
+                      <td className="px-3 py-3">{row.employee.dept}</td>
+                      <td className="px-3 py-3 text-right">{row.alloc}%</td>
+                      <td className="px-3 py-3 text-right">{row.capContribution.toFixed(1)}h</td>
+                      <td className="px-3 py-3 text-right">{row.thisActivityWorkload.toFixed(1)}h</td>
+                      <td className="px-3 py-3 text-right">{row.otherWorkload.toFixed(1)}h</td>
+                      <td className="px-3 py-3 text-right">{row.totalWorkload.toFixed(1)}h</td>
+                      <td className="px-3 py-3 text-right">{row.empUtil.toFixed(0)}%</td>
+                      <td className="px-3 py-3"><span className={`rounded-full px-2 py-1 text-xs ${empStatus.badge}`}>{empStatus.label}</span></td>
+                      <td className="px-3 py-3 text-right">{formatRupiah(Math.round(row.monthlyCostContribution))}</td>
                     </tr>
                   );
                 })}
@@ -276,33 +266,15 @@ export default function ActivityDetailPage({ params }: { params: Promise<{ activ
             <p><b>Effective Capacity per FTE:</b> {effectiveCapacityPerFte.toFixed(0)} hours</p>
             <p><b>Assigned HC:</b> {assignedHc.toFixed(2)} FTE</p>
           </div>
-        </Section>
-
-        <Section title="Workload Formula">
-          <div className="space-y-1 text-sm text-[#334155]">
-            <p>Base Workload Hours = Frequency x Duration</p>
-            <p>Adjusted Workload Hours = Base Workload Hours x Complexity Multiplier x Quality Review Factor x Seasonal Peak Factor x (1 + Rework Rate)</p>
-            <p>Effective Capacity per FTE = Standard Monthly Capacity x Productivity Factor</p>
-            <p>Required HC = Adjusted Workload Hours / Effective Capacity per FTE</p>
-            <p>Utilization = Adjusted Workload Hours / Total Assigned Effective Capacity</p>
-          </div>
-        </Section>
-
-        <Section title="Calculation Breakdown">
-          <div className="space-y-1 text-sm text-[#334155]">
-            <p>Frequency = {edit.frequencyValue} executions/month</p>
-            <p>Duration = {edit.duration} hours</p>
-            <p>Base Workload = {edit.frequencyValue} x {edit.duration} = {baseWorkloadHours.toFixed(2)} hours/month</p>
-            <p>Complexity Multiplier = {edit.complexityMultiplier}</p>
-            <p>Quality Review Factor = {edit.qualityReviewFactor}</p>
-            <p>Seasonal Peak Factor = {edit.seasonalPeakFactor}</p>
-            <p>Rework Rate = {(edit.reworkRate * 100).toFixed(0)}%</p>
-            <p>Adjusted Workload = {baseWorkloadHours.toFixed(2)} x {edit.complexityMultiplier} x {edit.qualityReviewFactor} x {edit.seasonalPeakFactor} x {(1 + edit.reworkRate).toFixed(2)} = {adjustedWorkloadHours.toFixed(2)} hours/month</p>
-            <p>Effective Capacity = {WORKLOAD_CONSTANTS.monthlyHours} x {WORKLOAD_CONSTANTS.productivityFactor} = {effectiveCapacityPerFte.toFixed(0)} hours/month</p>
-            <p>Required HC = {adjustedWorkloadHours.toFixed(2)} / {effectiveCapacityPerFte.toFixed(0)} = {requiredHc.toFixed(2)} FTE</p>
-            <p>Assigned HC = {assignedHc.toFixed(2)} FTE</p>
-            <p>Utilization = {adjustedWorkloadHours.toFixed(2)} / {(assignedHc * effectiveCapacityPerFte).toFixed(2)} = {utilization.toFixed(0)}%</p>
-            <p><b>Status:</b> {status.label}</p>
+          <div className="mt-4">
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" className="rounded-xl" onClick={() => setFormulaOpen(true)}>
+                Workload Formula
+              </Button>
+              <Button variant="outline" className="rounded-xl" onClick={() => setBreakdownOpen(true)}>
+                Calculation Breakdown
+              </Button>
+            </div>
           </div>
         </Section>
 
@@ -317,25 +289,25 @@ export default function ActivityDetailPage({ params }: { params: Promise<{ activ
             <p><b>Staffing Status:</b> {status.label}</p>
           </div>
           <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
-            <div className="h-56 rounded-xl bg-[#F8FAFC] p-3">
+            <div className="h-56 rounded-xl border border-[#EDF2F7] bg-[#F8FAFC] p-3">
               <p className="text-xs font-semibold">Demand vs Capacity</p>
               <ResponsiveContainer width="100%" height="90%">
                 <BarChart data={demandVsCapacityChart}><CartesianGrid stroke="#E2E8F0" vertical={false} /><XAxis dataKey="name" /><YAxis /><Tooltip /><Bar dataKey="value" fill="#2563EB" radius={[6, 6, 0, 0]} /></BarChart>
               </ResponsiveContainer>
             </div>
-            <div className="h-56 rounded-xl bg-[#F8FAFC] p-3">
+            <div className="h-56 rounded-xl border border-[#EDF2F7] bg-[#F8FAFC] p-3">
               <p className="text-xs font-semibold">Utilization Gauge</p>
               <ResponsiveContainer width="100%" height="90%">
                 <PieChart><Pie data={utilGauge} dataKey="value" innerRadius={45} outerRadius={70}>{utilGauge.map((_, idx) => <Cell key={idx} fill={idx === 0 ? (utilization > 110 ? "#DC2626" : utilization >= 90 ? "#16A34A" : "#F59E0B") : "#E2E8F0"} />)}</Pie><Tooltip /></PieChart>
               </ResponsiveContainer>
             </div>
-            <div className="h-56 rounded-xl bg-[#F8FAFC] p-3">
+            <div className="h-56 rounded-xl border border-[#EDF2F7] bg-[#F8FAFC] p-3">
               <p className="text-xs font-semibold">Required HC vs Assigned HC</p>
               <ResponsiveContainer width="100%" height="90%">
                 <BarChart data={hcComparisonChart}><CartesianGrid stroke="#E2E8F0" vertical={false} /><XAxis dataKey="name" /><YAxis /><Tooltip /><Bar dataKey="required" fill="#2563EB" /><Bar dataKey="assigned" fill="#94A3B8" /></BarChart>
               </ResponsiveContainer>
             </div>
-            <div className="h-56 rounded-xl bg-[#F8FAFC] p-3">
+            <div className="h-56 rounded-xl border border-[#EDF2F7] bg-[#F8FAFC] p-3">
               <p className="text-xs font-semibold">Monthly Workload Trend</p>
               <ResponsiveContainer width="100%" height="90%">
                 <LineChart data={activityTrend}><CartesianGrid stroke="#E2E8F0" vertical={false} /><XAxis dataKey="month" /><YAxis /><Tooltip /><Line type="monotone" dataKey="workload" stroke="#2563EB" strokeWidth={2} /></LineChart>
@@ -402,13 +374,13 @@ export default function ActivityDetailPage({ params }: { params: Promise<{ activ
         </Section>
 
         <Section title="Audit & Change History">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto rounded-xl border border-[#EDF2F7]">
             <table className="w-full text-sm">
-              <thead className="bg-[#F8FAFC] text-xs text-[#94A3B8]">
-                <tr><th className="p-2 text-left">Date</th><th className="p-2 text-left">User</th><th className="p-2 text-left">Action</th><th className="p-2 text-left">Before</th><th className="p-2 text-left">After</th><th className="p-2 text-left">Approval Status</th></tr>
+              <thead className="bg-[#F8FAFC] text-xs font-medium text-[#94A3B8]">
+                <tr><th className="px-3 py-3 text-left">Date</th><th className="px-3 py-3 text-left">User</th><th className="px-3 py-3 text-left">Action</th><th className="px-3 py-3 text-left">Before</th><th className="px-3 py-3 text-left">After</th><th className="px-3 py-3 text-left">Approval Status</th></tr>
               </thead>
               <tbody>
-                {auditRows.map((r) => <tr key={`${r.date}-${r.user}`} className="border-t border-[#F1F5F9]"><td className="p-2">{r.date}</td><td className="p-2">{r.user}</td><td className="p-2">{r.action}</td><td className="p-2">{r.before}</td><td className="p-2">{r.after}</td><td className="p-2">{r.approval}</td></tr>)}
+                {auditRows.map((r) => <tr key={`${r.date}-${r.user}`} className="border-t border-[#F1F5F9] hover:bg-[#F8FAFC]"><td className="px-3 py-3">{r.date}</td><td className="px-3 py-3">{r.user}</td><td className="px-3 py-3">{r.action}</td><td className="px-3 py-3">{r.before}</td><td className="px-3 py-3">{r.after}</td><td className="px-3 py-3">{r.approval}</td></tr>)}
               </tbody>
             </table>
           </div>
@@ -474,6 +446,8 @@ export default function ActivityDetailPage({ params }: { params: Promise<{ activ
       <Dialog open={scenarioOpen} onOpenChange={setScenarioOpen}><DialogContent><DialogHeader><DialogTitle>Simulate in Scenario</DialogTitle></DialogHeader><p className="text-sm text-[#475569]">Scenario draft will be created under {scenarios[0]?.name ?? "Baseline"} with updated activity workload and cost impact.</p><DialogFooter><Button variant="outline" onClick={() => setScenarioOpen(false)}>Cancel</Button><Button className="bg-[#2563EB] text-white" onClick={() => setScenarioOpen(false)}>Create Scenario Draft</Button></DialogFooter></DialogContent></Dialog>
       <Dialog open={exportOpen} onOpenChange={setExportOpen}><DialogContent><DialogHeader><DialogTitle>Export Activity Detail</DialogTitle></DialogHeader><p className="text-sm text-[#475569]">Export includes profile, process linkage, assignees, workload calculations, and cost breakdown.</p><DialogFooter><Button variant="outline" onClick={() => setExportOpen(false)}>Close</Button><Button className="bg-[#2563EB] text-white" onClick={() => setExportOpen(false)}>Export PDF Summary</Button></DialogFooter></DialogContent></Dialog>
       <Dialog open={historyOpen} onOpenChange={setHistoryOpen}><DialogContent><DialogHeader><DialogTitle>Audit Detail</DialogTitle></DialogHeader><p className="text-sm text-[#475569]">Detailed audit trail is available in Activity Governance logs.</p><DialogFooter><Button className="bg-[#2563EB] text-white" onClick={() => setHistoryOpen(false)}>Close</Button></DialogFooter></DialogContent></Dialog>
+      <Dialog open={formulaOpen} onOpenChange={setFormulaOpen}><DialogContent><DialogHeader><DialogTitle>Workload Formula</DialogTitle></DialogHeader><div className="space-y-1 text-sm text-[#334155]"><p>Base Workload Hours = Frequency x Duration</p><p>Adjusted Workload Hours = Base Workload Hours x Complexity Multiplier x Quality Review Factor x Seasonal Peak Factor x (1 + Rework Rate)</p><p>Effective Capacity per FTE = Standard Monthly Capacity x Productivity Factor</p><p>Required HC = Adjusted Workload Hours / Effective Capacity per FTE</p><p>Utilization = Adjusted Workload Hours / Total Assigned Effective Capacity</p></div><DialogFooter><Button variant="outline" onClick={() => setFormulaOpen(false)}>Close</Button></DialogFooter></DialogContent></Dialog>
+      <Dialog open={breakdownOpen} onOpenChange={setBreakdownOpen}><DialogContent><DialogHeader><DialogTitle>Calculation Breakdown</DialogTitle></DialogHeader><div className="space-y-1 text-sm text-[#334155]"><p>Frequency = {edit.frequencyValue} executions/month</p><p>Duration = {edit.duration} hours</p><p>Base Workload = {edit.frequencyValue} x {edit.duration} = {baseWorkloadHours.toFixed(2)} hours/month</p><p>Complexity Multiplier = {edit.complexityMultiplier}</p><p>Quality Review Factor = {edit.qualityReviewFactor}</p><p>Seasonal Peak Factor = {edit.seasonalPeakFactor}</p><p>Rework Rate = {(edit.reworkRate * 100).toFixed(0)}%</p><p>Adjusted Workload = {baseWorkloadHours.toFixed(2)} x {edit.complexityMultiplier} x {edit.qualityReviewFactor} x {edit.seasonalPeakFactor} x {(1 + edit.reworkRate).toFixed(2)} = {adjustedWorkloadHours.toFixed(2)} hours/month</p><p>Effective Capacity = {WORKLOAD_CONSTANTS.monthlyHours} x {WORKLOAD_CONSTANTS.productivityFactor} = {effectiveCapacityPerFte.toFixed(0)} hours/month</p><p>Required HC = {adjustedWorkloadHours.toFixed(2)} / {effectiveCapacityPerFte.toFixed(0)} = {requiredHc.toFixed(2)} FTE</p><p>Assigned HC = {assignedHc.toFixed(2)} FTE</p><p>Utilization = {adjustedWorkloadHours.toFixed(2)} / {(assignedHc * effectiveCapacityPerFte).toFixed(2)} = {utilization.toFixed(0)}%</p><p><b>Status:</b> {status.label}</p></div><DialogFooter><Button variant="outline" onClick={() => setBreakdownOpen(false)}>Close</Button></DialogFooter></DialogContent></Dialog>
     </div>
   );
 }

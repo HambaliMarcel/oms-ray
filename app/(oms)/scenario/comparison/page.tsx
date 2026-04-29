@@ -232,10 +232,14 @@ export default function ScenarioComparisonPage() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button size="sm" variant="outline" className="text-xs">Send for Approval</Button>
-              <Button size="sm" className="text-xs" style={{ background: "var(--primary)", color: "white" }}>
-                Adopt as Baseline
-              </Button>
+              <Link href={`/scenario/directory?submit=${recommendation === "A" ? a.scenario.id : b.scenario.id}`}>
+                <Button size="sm" variant="outline" className="text-xs">Send for Approval</Button>
+              </Link>
+              <Link href={`/scenario/builder?baseline=${recommendation === "A" ? a.scenario.id : b.scenario.id}`}>
+                <Button size="sm" className="text-xs" style={{ background: "var(--primary)", color: "white" }}>
+                  Adopt as Baseline
+                </Button>
+              </Link>
             </div>
           </div>
         </Card>

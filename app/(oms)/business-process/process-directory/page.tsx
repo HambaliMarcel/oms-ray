@@ -16,9 +16,6 @@ import {
   ArrowUpDown,
   Workflow,
   AlertTriangle,
-  Users,
-  Clock,
-  TrendingUp,
   Edit3,
   ExternalLink,
 } from "lucide-react";
@@ -103,31 +100,6 @@ export default function ProcessDirectoryPage() {
     return sorted;
   }, [search, categoryFilter, deptFilter, statusFilter, bottleneckOnly, sortKey, sortAsc]);
 
-  // ----- Summary metrics -----
-  const summary = useMemo(() => {
-    const total = rows.length;
-    const bottlenecks = rows.filter((p) => p.bottleneck).length;
-    const slaCompliant = rows.filter((p) => p.slaMet).length;
-    const avgKpi =
-      total > 0 ? Math.round(rows.reduce((s, p) => s + p.kpiScore, 0) / total) : 0;
-    const totalActivities = rows.reduce(
-      (s, p) => s + activityList.filter((a) => a.processId === p.id).length,
-      0,
-    );
-    const totalHc = rows.reduce((s, p) => {
-      const acts = activityList.filter((a) => a.processId === p.id);
-      return s + acts.reduce((sum, a) => sum + a.requiredHc, 0);
-    }, 0);
-    return {
-      total,
-      bottlenecks,
-      slaPct: total > 0 ? Math.round((slaCompliant / total) * 100) : 0,
-      avgKpi,
-      totalActivities,
-      totalHc,
-    };
-  }, [rows]);
-
   const toggleExpand = (id: string) => {
     setExpanded((prev) => {
       const next = new Set(prev);
@@ -193,26 +165,6 @@ export default function ProcessDirectoryPage() {
               Create Process
             </button>
           </div>
-        </div>
-
-        {/* ===== SUMMARY METRICS ===== */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-          <SummaryCard label="Processes" value={summary.total} icon={<Workflow className="w-4 h-4" />} />
-          <SummaryCard
-            label="Bottlenecks"
-            value={summary.bottlenecks}
-            tone="negative"
-            icon={<AlertTriangle className="w-4 h-4 text-chart-5" />}
-          />
-          <SummaryCard
-            label="SLA"
-            value={`${summary.slaPct}%`}
-            tone={summary.slaPct >= 80 ? "positive" : summary.slaPct >= 60 ? "neutral" : "negative"}
-            icon={<Clock className="w-4 h-4" />}
-          />
-          <SummaryCard label="Avg KPI" value={summary.avgKpi} icon={<TrendingUp className="w-4 h-4" />} />
-          <SummaryCard label="Activities" value={summary.totalActivities} icon={<Workflow className="w-4 h-4" />} />
-          <SummaryCard label="Assignments" value={summary.totalHc} icon={<Users className="w-4 h-4" />} />
         </div>
 
         {/* ===== FILTER BAR ===== */}
@@ -404,36 +356,6 @@ function SortHeader({
         {active && <span className="text-[9px] tabular-nums">{sortAsc ? "↑" : "↓"}</span>}
       </div>
     </th>
-  );
-}
-
-function SummaryCard({
-  label,
-  value,
-  icon,
-  tone = "neutral",
-}: {
-  label: string;
-  value: string | number;
-  icon: React.ReactNode;
-  tone?: "positive" | "negative" | "neutral";
-}) {
-  const valueClass =
-    tone === "positive"
-      ? "text-chart-3"
-      : tone === "negative"
-        ? "text-chart-5"
-        : "text-foreground";
-  return (
-    <div className="bg-card border border-border rounded-xl p-3 flex items-center justify-between">
-      <div>
-        <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-          {label}
-        </p>
-        <p className={cn("mt-0.5 text-xl font-bold tabular-nums", valueClass)}>{value}</p>
-      </div>
-      <div className="rounded-md bg-muted p-2 text-muted-foreground">{icon}</div>
-    </div>
   );
 }
 
